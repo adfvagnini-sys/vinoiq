@@ -290,13 +290,17 @@
     <!-- Target Audience & Facebook Wine Groups Seeding Board (3.6M+ Combined Reach) -->
     <div class="panel" style="border-color:var(--gold);">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
-        <div>
+        <div style="flex:1;min-width:260px;">
           <h2>🎯 Target Facebook Wine Groups, Detroit Foodie Groups & Communities (3.6M+ Reach)</h2>
           <p class="sub" style="margin-bottom:0;">
-            Every group below has a <strong>custom-tailored, non-spammy post</strong> written specifically for its members + a unique tracked link (<code>?ref=adriano&amp;src=...</code>). Tap <strong>"📋 Copy Post &amp; Open Group"</strong> to copy the post and jump straight into that group!
+            Every group below has a <strong>custom-tailored, non-spammy post</strong> asking for feedback + your clean link (<code>https://is.gd/VinoIQ</code>). Tap <strong>"📋 Copy Post &amp; Open Group"</strong> to post in Facebook groups, or click below to email all 10 Michigan Wine Clubs &amp; Sommeliers at once!
           </p>
         </div>
+        <button class="btn btn-green" id="emailAllClubsBtn" onclick="emailAllWineClubs()" style="padding:11px 16px;font-size:13px;">
+          📧 Email All 10 Michigan Wine Clubs &amp; Sommeliers Now
+        </button>
       </div>
+      <div id="emailClubsToast" class="status-toast" style="margin-bottom:10px;"></div>
 
       <!-- Category Filter Tabs -->
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;">
@@ -563,6 +567,34 @@ It's 100% free to use — would love for fellow wine lovers to test it out at di
           </div>
         `;
       }).join('');
+    }
+
+    async function emailAllWineClubs() {
+      const btn = document.getElementById('emailAllClubsBtn');
+      const toast = document.getElementById('emailClubsToast');
+      btn.disabled = true;
+      btn.textContent = '⏳ Sending Personalized Feedback Emails to 10 Wine Clubs...';
+      try {
+        const res = await fetch('/api/growth/email-wine-clubs', { method: 'POST' });
+        const data = await res.json();
+        toast.style.display = 'block';
+        if (res.ok && data.success) {
+          toast.style.background = 'rgba(16,185,129,0.2)';
+          toast.style.border = '1px solid #10b981';
+          toast.textContent = '✅ Sent personalized Founder Feedback Request emails (with https://is.gd/VinoIQ) to all 10 Michigan & Metro Detroit Wine Clubs & Sommeliers!';
+          loadDashboard();
+        } else {
+          toast.style.background = 'rgba(239,68,68,0.2)';
+          toast.style.border = '1px solid #ef4444';
+          toast.textContent = '⚠️ Error: ' + (data.error || 'Could not send emails.');
+        }
+      } catch (e) {
+        toast.style.display = 'block';
+        toast.textContent = '⚠️ Network error triggering Wine Club emails.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📧 Email All 10 Michigan Wine Clubs & Sommeliers Now';
+      }
     }
 
     async function copyCommunityPostOnly(id) {

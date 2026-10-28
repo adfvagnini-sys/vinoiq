@@ -476,8 +476,11 @@ It's 100% free to use — would love for fellow wine lovers to test it out at di
       function getApiBase() {
         if (!window.location.hostname.includes('github.io')) return Promise.resolve('');
         if (!resolvedBasePromise) {
-          resolvedBasePromise = origFetch('./live_url.json?t=' + Date.now(), { cache: 'no-store' })
-            .then(r => r.json())
+          resolvedBasePromise = origFetch('https://api.github.com/repos/adfvagnini-sys/vinoiq/contents/live_url.json?t=' + Date.now(), {
+            headers: { Accept: 'application/vnd.github.v3.raw' },
+            cache: 'no-store'
+          })
+            .then(r => r.ok ? r.json() : origFetch('./live_url.json?t=' + Date.now(), { cache: 'no-store' }).then(r2 => r2.json()))
             .then(d => (d.apiTunnelUrl || '').replace(/\/$/, ''))
             .catch(() => '');
         }
@@ -541,7 +544,7 @@ It's 100% free to use — would love for fellow wine lovers to test it out at di
       container.innerHTML = filtered.map((c) => {
         const trackedLink = `${currentPublicUrl}/?ref=${encodeURIComponent(handle)}&src=${encodeURIComponent(c.id)}`;
         const finalPost = (c.customPost || '').replace(/\{link\}/g, trackedLink);
-        const isPosted = (c.status || '').includes('Posted');
+        const isPosted = (c.status || '').includes('Posted') || (c.status || '').includes('Sent') || (c.status || '').includes('Opened') || (c.status || '').includes('Clicked');
         return `
           <div style="background:var(--card-2);border:1px solid ${isPosted ? 'var(--green)' : 'var(--border)'};border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;">
             <div>
@@ -550,7 +553,7 @@ It's 100% free to use — would love for fellow wine lovers to test it out at di
                   <span style="font-size:10px;background:#2e1322;border:1px solid var(--gold);color:var(--gold-bright);padding:2px 7px;border-radius:6px;font-weight:800;">${c.platform}</span>
                   <span style="font-size:10px;background:rgba(16,185,129,0.16);color:#6ee7b7;padding:2px 7px;border-radius:6px;font-weight:800;margin-left:4px;">👥 ${c.audienceSize}</span>
                 </div>
-                <span style="font-size:11px;font-weight:800;color:${isPosted ? '#6ee7b7' : 'var(--muted)'};">${c.status} ${c.clicks ? `• 🔥 ${c.clicks} clicks` : ''}</span>
+                <span style="font-size:11px;font-weight:800;color:${isPosted ? '#6ee7b7' : 'var(--muted)'};">${c.status}${c.opens ? ` • 👀 ${c.opens} opens` : ''}${c.clicks ? ` • 🔥 ${c.clicks} clicks` : ''}</span>
               </div>
               <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;">${c.name}</div>
               <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px;">💡 <strong>Why they convert:</strong> ${c.whyTheyNeedIt}</div>

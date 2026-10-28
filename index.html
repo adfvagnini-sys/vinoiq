@@ -961,8 +961,11 @@
       function getApiBase() {
         if (!window.location.hostname.includes('github.io')) return Promise.resolve('');
         if (!resolvedBasePromise) {
-          resolvedBasePromise = origFetch('./live_url.json?t=' + Date.now(), { cache: 'no-store' })
-            .then(r => r.json())
+          resolvedBasePromise = origFetch('https://api.github.com/repos/adfvagnini-sys/vinoiq/contents/live_url.json?t=' + Date.now(), {
+            headers: { Accept: 'application/vnd.github.v3.raw' },
+            cache: 'no-store'
+          })
+            .then(r => r.ok ? r.json() : origFetch('./live_url.json?t=' + Date.now(), { cache: 'no-store' }).then(r2 => r2.json()))
             .then(d => (d.apiTunnelUrl || '').replace(/\/$/, ''))
             .catch(() => '');
         }

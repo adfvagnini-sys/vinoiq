@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VinoIQ™ — Viral Free User Growth & Revenue Command Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0608;
+      --card: #170d11;
+      --card-2: #211218;
+      --border: #381e28;
+      --gold: #e5b869;
+      --gold-bright: #ffd484;
+      --wine: #9e2a47;
+      --green: #10b981;
+      --text: #f9f2f4;
+      --muted: #b89fa7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top, #261019 0%, #0c0608 65%);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 20px 14px 60px;
+    }
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--gold);
+    }
+    .badge-free {
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid var(--green);
+      color: #6ee7b7;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.6px;
+    }
+    .nav-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      transition: 0.18s ease;
+    }
+    .btn:hover { border-color: var(--gold); }
+    .btn-gold {
+      background: linear-gradient(135deg, #e5b869 0%, #c6923a 100%);
+      color: #16090d;
+      border: none;
+    }
+    .btn-green {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #051b11;
+      border: none;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .stat-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-top: 4px;
+    }
+    .stat-sub {
+      font-size: 11px;
+      color: #6ee7b7;
+      margin-top: 3px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 760px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .panel h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .panel p.sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.45;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      margin-bottom: 5px;
+      margin-top: 10px;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: #10080b;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    textarea { min-height: 95px; resize: vertical; }
+    .share-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .viral-box {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .viral-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .viral-box-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .viral-box-text {
+      font-size: 12px;
+      color: #e2d4d8;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+    .money-stream {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .money-stream h4 {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .money-stream p {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .payout-pill {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid var(--green);
+      color: #6ee7b7;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .status-toast {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="brand">
+        <span style="font-size:28px;">🍷</span>
+        <div>
+          <h1>VinoIQ™ Viral Growth & Revenue Hub</h1>
+          <div style="font-size:12px;color:var(--muted);">Get Thousands of Free Users • Monetize Every Bottle & Clean Wine Referral</div>
+        </div>
+        <span class="badge-free">100% FREE FOR USERS</span>
+      </div>
+      <div class="nav-btns">
+        <a href="/" class="btn btn-gold">🍷 Open VinoIQ App</a>
+        <a href="/qr-card.html" class="btn">📱 QR Table Card</a>
+        <a href="/VinoIQ_USPTO_Provisional_Patent.pdf" target="_blank" class="btn">📜 USPTO Patent PDF</a>
+      </div>
+    </div>
+
+    <!-- Live Metrics -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Free Registered Profiles</div>
+        <div class="stat-val" id="statUsers">2</div>
+        <div class="stat-sub">100% Free Forever Access</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">SMS & Viral Invites Sent</div>
+        <div class="stat-val" id="statInvites">0</div>
+        <div class="stat-sub">Direct Twilio + Native Share</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Retail Bottle Clicks</div>
+        <div class="stat-val" id="statRetail">3</div>
+        <div class="stat-sub">12% Avg Retail Affiliate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Clean Wine Box Referrals</div>
+        <div class="stat-val" id="statCleanBox">2</div>
+        <div class="stat-sub">$45 CPA Per Starter Box</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Est. Partner Revenue</div>
+        <div class="stat-val" id="statRev" style="color:#6ee7b7;">$148.50</div>
+        <div class="stat-sub">Tracked Across Free Users</div>
+      </div>
+    </div>
+
+    <!-- Target Audience & Facebook Wine Groups Seeding Board (3.6M+ Combined Reach) -->
+    <div class="panel" style="border-color:var(--gold);">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
+        <div>
+          <h2>🎯 Target Facebook Wine Groups, Detroit Foodie Groups & Communities (3.6M+ Reach)</h2>
+          <p class="sub" style="margin-bottom:0;">
+            Every group below has a <strong>custom-tailored, non-spammy post</strong> written specifically for its members + a unique tracked link (<code>?ref=adriano&amp;src=...</code>). Tap <strong>"📋 Copy Post &amp; Open Group"</strong> to copy the post and jump straight into that group!
+          </p>
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;">
+        <button class="btn btn-gold" id="cat-ALL" onclick="filterCommunities('ALL')" style="padding:7px 12px;font-size:12px;">🌐 All 18 Communities (3.6M+)</button>
+        <button class="btn" id="cat-Facebook Wine Groups" onclick="filterCommunities('Facebook Wine Groups')" style="padding:7px 12px;font-size:12px;">🍷 Facebook Wine Groups (645k)</button>
+        <button class="btn" id="cat-Metro Detroit Foodie Groups" onclick="filterCommunities('Metro Detroit Foodie Groups')" style="padding:7px 12px;font-size:12px;">🥩 Metro Detroit Foodie Groups (345k)</button>
+        <button class="btn" id="cat-Sulfite-Free & Health Groups" onclick="filterCommunities('Sulfite-Free & Health Groups')" style="padding:7px 12px;font-size:12px;">🌿 Sulfite-Free &amp; Migraine Groups (230k)</button>
+        <button class="btn" id="cat-Reddit, Nextdoor & Forums" onclick="filterCommunities('Reddit, Nextdoor & Forums')" style="padding:7px 12px;font-size:12px;">🔥 Reddit, Nextdoor &amp; Forums (2.4M)</button>
+        <button class="btn" id="cat-Local Wine Clubs & Sommeliers" onclick="filterCommunities('Local Wine Clubs & Sommeliers')" style="padding:7px 12px;font-size:12px;">🍾 Local Wine Clubs &amp; Sommeliers</button>
+      </div>
+
+      <div id="communitiesContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(390px,1fr));gap:12px;"></div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Left: Batch SMS Friend Invite Blaster -->
+      <div class="panel">
+        <h2>🚀 1-Click Free User SMS Invite Blaster</h2>
+        <p class="sub">
+          Get friends, family, servers, and wine lovers using VinoIQ for <strong>100% FREE</strong>. Paste 1 or 50 contacts below (one per line, e.g. <code>Mike 248-555-1234</code> or just phone numbers) and blast personalized SMS invites right now.
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label>Your Inviter Handle</label>
+            <input type="text" id="senderHandle" value="adriano" />
+          </div>
+          <div>
+            <label>Your Display Name</label>
+            <input type="text" id="senderName" value="Adriano" />
+          </div>
+        </div>
+
+        <label>Select Viral Invite Hook</label>
+        <select id="templateId" onchange="updateTemplatePreview()">
+          <option value="friend_free">🔥 Personal Friend Hook ("100% Free — Best Wine, Lowest Markup & Zero Sulfites")</option>
+          <option value="detroit_foodie">🥩 Metro Detroit Steakhouse & Foodie Hook (Prime + Proper, Capital Grille, Bacco, Andiamo)</option>
+          <option value="industry_vip">🍾 Bartender / Server / Sommelier Secret Weapon Hook</option>
+        </select>
+
+        <label>Paste Friends' Names & Phone Numbers (1 or 50 at once)</label>
+        <textarea id="rawContactsText" placeholder="Example:&#10;Sami 248-444-2842&#10;Marco 313-555-0199&#10;248-555-0144"></textarea>
+
+        <label>Message Preview (Optional Custom Override — use {name} and {link})</label>
+        <textarea id="customMessage" style="min-height:80px;"></textarea>
+
+        <div class="share-row">
+          <button class="btn btn-green" onclick="blastSmsInvites()" id="blastBtn" style="flex:1;">
+            📲 Blast Free SMS Invites Now
+          </button>
+          <button class="btn btn-gold" onclick="openNativePhoneSms()">
+            💬 Text From My iPhone/Android
+          </button>
+          <button class="btn" onclick="shareWhatsApp()">
+            🟢 WhatsApp Share
+          </button>
+        </div>
+
+        <div id="blastToast" class="status-toast"></div>
+
+        <!-- Personal Referral Link Box -->
+        <div style="margin-top:16px;padding:12px;background:#10080b;border:1px dashed var(--gold);border-radius:10px;">
+          <div style="font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;">Your Personal Free Invite Link (Tracks Referrals Automatically)</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+            <input type="text" id="personalRefLink" readonly value="https://set-static-scripts-hint.trycloudflare.com/?ref=adriano" style="font-weight:700;color:#6ee7b7;" />
+            <button class="btn btn-gold" onclick="copyRefLink()">Copy Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: How Free Users Make Us Money Automatically -->
+      <div class="panel">
+        <h2>💰 How Every Free User Makes Money</h2>
+        <p class="sub">
+          Users never hit a paywall—scanning menus, restaurant lookups, the 5-question palate quiz, and sulfite checks are <strong>100% FREE forever</strong>. Here is how each free user monetizes:
+        </p>
+
+        <div class="money-stream">
+          <div>
+            <h4>1. Retail Bottle Arbitrage ("Save $85 vs. Menu")</h4>
+            <p>When a free user sees a $135 steakhouse bottle costs $48 retail, tapping <strong>🛒 Buy Bottle at Retail</strong> routes them to Wine.com / Vivino / Total Wine / Instacart with your affiliate tag.</p>
+          </div>
+          <span class="payout-pill">8%–15% + $15 Bounty</span>
+        </div>
+
+        <div class="money-stream">
+          <div>
+            <h4>2. Sulfite-Free Starter Box CPA</h4>
+            <p>35% of wine drinkers get sulfite headaches. Our <strong>Sulfites Tab</strong> & wine cards feature a "6 Organic Sulfite-Free Bottles for $49" partner offer (Dry Farm Wines / Clean Wine Club).</p>
+          </div>
+          <span class="payout-pill">$35–$45 Per Box</span>
+        </div>
+
+        <div class="money-stream">
+          <div>
+            <h4>3. Local Restaurant & Winery "Featured Pour"</h4>
+            <p>Once hundreds of free Metro Detroit diners use VinoIQ on Friday/Saturday nights, local restaurants & distributors pay to feature their Sommelier Selection at the top of the list.</p>
+          </div>
+          <span class="payout-pill">$199/mo Per Venue</span>
+        </div>
+
+        <div class="money-stream">
+          <div>
+            <h4>4. Viral Referral Flywheel (Invite 3 = Free VIP)</h4>
+            <p>Every new free user is prompted to invite 3 friends to unlock Lifetime VIP & a $25 Clean Wine Voucher—turning 10 free users into 30, 90, 270+ organically.</p>
+          </div>
+          <span class="payout-pill">3x Viral Loop</span>
+        </div>
+
+        <div style="margin-top:14px;padding:12px;background:rgba(229,184,105,0.08);border:1px solid var(--border);border-radius:12px;">
+          <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:6px;">🔗 Direct Affiliate Payout Sign-Up Portals (Connect Your Bank):</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <a href="https://www.wine.com/content/landing/affiliate" target="_blank" class="btn" style="font-size:11px;padding:6px 10px;">Wine.com Affiliates</a>
+            <a href="https://www.dryfarmwines.com/pages/affiliate-program" target="_blank" class="btn" style="font-size:11px;padding:6px 10px;">Dry Farm Wines ($45 CPA)</a>
+            <a href="https://www.vivino.com/merchants" target="_blank" class="btn" style="font-size:11px;padding:6px 10px;">Vivino Partner Network</a>
+            <a href="https://impact.com/" target="_blank" class="btn" style="font-size:11px;padding:6px 10px;">Instacart / Total Wine (Impact)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ready-to-Post Viral Social & Local Seeding Drop Kit -->
+    <div class="panel">
+      <h2>📣 Ready-to-Copy Viral Social Posts (Get Free Users Today)</h2>
+      <p class="sub">
+        Copy and paste these proven hooks into your Instagram/TikTok Stories, Metro Detroit Foodie Facebook Groups, Nextdoor, Reddit, or Friday night dinner group chats.
+      </p>
+
+      <div class="viral-box">
+        <div class="viral-box-header">
+          <span class="viral-box-title">📱 1. Group Chat / Friends & Family Text Drop (Fastest First 50 Free Users)</span>
+          <button class="btn btn-gold" style="padding:5px 10px;font-size:11px;" onclick="copyViralBox('viralText1')">Copy Text</button>
+        </div>
+        <div class="viral-box-text" id="viralText1">Hey everyone! 🍷 I just built and launched a 100% FREE wine app called VinoIQ. Next time you're out at dinner, just type in the restaurant (or snap a photo of the wine menu) and it instantly tells you:
+1) Best Overall Wine
+2) Best Bang for the Buck (exposes which bottle has the lowest restaurant markup)
+3) Which wines have NO Sulfites so you don't wake up with a headache!
+You can also take a 30-second quiz and save your own wine ratings. Try it free here: __LINK__</div>
+      </div>
+
+      <div class="viral-box">
+        <div class="viral-box-header">
+          <span class="viral-box-title">🥩 2. Metro Detroit Foodies Facebook Group / Nextdoor / Reddit (r/Detroit & r/wine)</span>
+          <button class="btn btn-gold" style="padding:5px 10px;font-size:11px;" onclick="copyViralBox('viralText2')">Copy Post</button>
+        </div>
+        <div class="viral-box-text" id="viralText2">I got tired of paying 3.5x retail markup on restaurant wine lists and guessing which bottles have added sulfites, so I built a 100% free tool called VinoIQ 🍷
+
+You can type in local spots like Prime + Proper, The Capital Grille, Bacco, San Morello, Andiamo, Joe Muer, Selden Standard, Ruth's Chris, or Olive Garden (or snap a picture of ANY wine menu) and it immediately shows:
+• Best Bang for the Buck (exact retail price vs. menu price markup)
+• Best Flavor Match for your palate
+• Strictly No-Added-Sulfite (0 ppm) & Organic Low-Sulfite options
+
+It's 100% free to use — would love for fellow wine lovers to test it out at dinner this week: __LINK__</div>
+      </div>
+
+      <div class="viral-box">
+        <div class="viral-box-header">
+          <span class="viral-box-title">🎬 3. 15-Second TikTok / Instagram Reel / Story Script ("Restaurant Wine Markup Exposed")</span>
+          <button class="btn btn-gold" style="padding:5px 10px;font-size:11px;" onclick="copyViralBox('viralText3')">Copy Script</button>
+        </div>
+        <div class="viral-box-text" id="viralText3">[HOOK - Hold phone over a steakhouse wine menu]: "Stop letting restaurants charge you $160 for a $38 bottle of wine — or giving you a massive sulfite headache the next morning."
+[DEMO - Show VinoIQ screen]: "I built this free AI app called VinoIQ. You just type in the restaurant or snap a photo of the menu. In 2 seconds it exposes the exact retail markup to find the Best Bang for the Buck, matches your flavor profile, and highlights 100% Sulfite-Free bottles."
+[CTA]: "It's 100% free — link in bio / comment VINO and I'll DM you the free link: __LINK__"</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Transparent Cloud-to-Tunnel API Router
+    (function() {
+      const origFetch = window.fetch.bind(window);
+      let resolvedBasePromise = null;
+      function getApiBase() {
+        if (!window.location.hostname.includes('github.io')) return Promise.resolve('');
+        if (!resolvedBasePromise) {
+          resolvedBasePromise = origFetch('./live_url.json?t=' + Date.now(), { cache: 'no-store' })
+            .then(r => r.json())
+            .then(d => (d.apiTunnelUrl || '').replace(/\/$/, ''))
+            .catch(() => '');
+        }
+        return resolvedBasePromise;
+      }
+      window.fetch = async function(input, init) {
+        if (typeof input === 'string' && input.startsWith('/api/')) {
+          const base = await getApiBase();
+          if (base) input = base + input;
+        }
+        return origFetch(input, init);
+      };
+    })();
+
+    let currentPublicUrl = 'https://adfvagnini-sys.github.io/vinoiq';
+    let allTargetCommunities = [];
+    let selectedCategory = 'ALL';
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch('/api/growth/dashboard');
+        const data = await res.json();
+        if (data.publicUrl) currentPublicUrl = data.publicUrl;
+        allTargetCommunities = data.targetCommunities || [];
+
+        document.getElementById('statUsers').textContent = data.totalFreeUsers || 2;
+        document.getElementById('statInvites').textContent = data.totalInvitesSent || 0;
+        const m = data.monetizationStats || {};
+        document.getElementById('statRetail').textContent = m.retailAffiliateClicks || 0;
+        document.getElementById('statCleanBox').textContent = m.cleanWineBoxClicks || 0;
+        document.getElementById('statRev').textContent = '$' + Number(m.estimatedCommissionRevenue || 0).toFixed(2);
+
+        updateRefLink();
+        updateTemplatePreview();
+        populateViralLinks();
+        renderCommunities();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function filterCommunities(cat) {
+      selectedCategory = cat;
+      ['ALL', 'Facebook Wine Groups', 'Metro Detroit Foodie Groups', 'Sulfite-Free & Health Groups', 'Reddit, Nextdoor & Forums', 'Local Wine Clubs & Sommeliers'].forEach((c) => {
+        const btn = document.getElementById('cat-' + c);
+        if (btn) {
+          btn.className = c === cat ? 'btn btn-gold' : 'btn';
+        }
+      });
+      renderCommunities();
+    }
+
+    function renderCommunities() {
+      const container = document.getElementById('communitiesContainer');
+      if (!container) return;
+      const handle = (document.getElementById('senderHandle').value || 'adriano').trim().toLowerCase();
+      const filtered = selectedCategory === 'ALL'
+        ? allTargetCommunities
+        : allTargetCommunities.filter((c) => c.category === selectedCategory);
+
+      container.innerHTML = filtered.map((c) => {
+        const trackedLink = `${currentPublicUrl}/?ref=${encodeURIComponent(handle)}&src=${encodeURIComponent(c.id)}`;
+        const finalPost = (c.customPost || '').replace(/\{link\}/g, trackedLink);
+        const isPosted = (c.status || '').includes('Posted');
+        return `
+          <div style="background:var(--card-2);border:1px solid ${isPosted ? 'var(--green)' : 'var(--border)'};border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
+                <div>
+                  <span style="font-size:10px;background:#2e1322;border:1px solid var(--gold);color:var(--gold-bright);padding:2px 7px;border-radius:6px;font-weight:800;">${c.platform}</span>
+                  <span style="font-size:10px;background:rgba(16,185,129,0.16);color:#6ee7b7;padding:2px 7px;border-radius:6px;font-weight:800;margin-left:4px;">👥 ${c.audienceSize}</span>
+                </div>
+                <span style="font-size:11px;font-weight:800;color:${isPosted ? '#6ee7b7' : 'var(--muted)'};">${c.status} ${c.clicks ? `• 🔥 ${c.clicks} clicks` : ''}</span>
+              </div>
+              <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;">${c.name}</div>
+              <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px;">💡 <strong>Why they convert:</strong> ${c.whyTheyNeedIt}</div>
+              <textarea id="post-${c.id}" style="min-height:92px;font-size:11.5px;line-height:1.4;margin-bottom:10px;">${finalPost}</textarea>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-green" style="flex:1;padding:9px 12px;font-size:12px;" onclick="launchCommunityPost('${c.id}', '${c.targetUrl}', '${c.contactEmail || ''}')">
+                📋 Copy Post &amp; Open ${c.contactEmail ? 'Email / Site' : 'Group'} →
+              </button>
+              <button class="btn" style="padding:9px 12px;font-size:12px;" onclick="copyCommunityPostOnly('${c.id}')">
+                Copy Text Only
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function copyCommunityPostOnly(id) {
+      const box = document.getElementById('post-' + id);
+      if (box) {
+        await navigator.clipboard.writeText(box.value);
+        alert('✅ Copied custom post + tracked link to clipboard!');
+      }
+    }
+
+    async function launchCommunityPost(id, targetUrl, contactEmail) {
+      const box = document.getElementById('post-' + id);
+      const postText = box ? box.value : '';
+      if (postText) {
+        try { await navigator.clipboard.writeText(postText); } catch (e) {}
+      }
+      fetch('/api/growth/community-action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ communityId: id, action: 'posted' })
+      }).then(() => loadDashboard()).catch(() => {});
+
+      if (contactEmail) {
+        const subject = encodeURIComponent('Free VIP VinoIQ™ Access for Your Wine Club Members');
+        const body = encodeURIComponent(postText);
+        window.open(`mailto:${contactEmail}?subject=${subject}&body=${body}`, '_blank');
+      } else {
+        window.open(targetUrl, '_blank');
+      }
+    }
+
+    function updateRefLink() {
+      const handle = (document.getElementById('senderHandle').value || 'adriano').trim().toLowerCase();
+      const link = `${currentPublicUrl}/?ref=${encodeURIComponent(handle)}`;
+      document.getElementById('personalRefLink').value = link;
+      return link;
+    }
+
+    document.getElementById('senderHandle').addEventListener('input', () => {
+      updateRefLink();
+      updateTemplatePreview();
+      populateViralLinks();
+    });
+
+    function populateViralLinks() {
+      const link = updateRefLink();
+      ['viralText1', 'viralText2', 'viralText3'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.textContent = el.textContent.replace(/https?:\/\/[^\s]+|__LINK__/g, link);
+        }
+      });
+    }
+
+    function updateTemplatePreview() {
+      const tpl = document.getElementById('templateId').value;
+      const sender = document.getElementById('senderName').value || 'Adriano';
+      const link = updateRefLink();
+      const box = document.getElementById('customMessage');
+      if (tpl === 'detroit_foodie') {
+        box.value = `Hey {name}! ${sender} here 🍷 I just launched VinoIQ — a 100% FREE app that exposes restaurant wine markups (Prime + Proper, Capital Grille, Bacco, Andiamo, Olive Garden & more) + flags 0-sulfite wines so you never get a headache.\n\nTry it free & claim your profile here:\n{link}`;
+      } else if (tpl === 'industry_vip') {
+        box.value = `Hey {name}! It's ${sender}. Built a 100% FREE AI Sommelier app called VinoIQ that ranks any restaurant wine list by Best Overall, Best Bang for the Buck (lowest markup), Flavor & No-Sulfites.\n\nUse it free at dinner or share with friends:\n{link}`;
+      } else {
+        box.value = `Hey {name}! It's ${sender} 🍷 Check out my new app VinoIQ (100% FREE) — next time you're at a restaurant, snap a pic of the wine list or type where you're at and it tells you the best wine, best bang for the buck, and which ones have NO sulfites.\n\nTry it free here:\n{link}`;
+      }
+    }
+
+    async function blastSmsInvites() {
+      const rawContactsText = document.getElementById('rawContactsText').value.trim();
+      const senderHandle = document.getElementById('senderHandle').value.trim() || 'adriano';
+      const senderName = document.getElementById('senderName').value.trim() || 'Adriano';
+      const templateId = document.getElementById('templateId').value;
+      const customMessage = document.getElementById('customMessage').value.trim();
+      const toast = document.getElementById('blastToast');
+
+      if (!rawContactsText) {
+        toast.style.display = 'block';
+        toast.style.background = 'rgba(239,68,68,0.2)';
+        toast.style.border = '1px solid #ef4444';
+        toast.textContent = '⚠️ Paste at least one friend phone number above first!';
+        return;
+      }
+
+      const btn = document.getElementById('blastBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Sending Free SMS Invites...';
+
+      try {
+        const res = await fetch('/api/growth/blast-invites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            senderHandle,
+            senderName,
+            templateId,
+            customMessage,
+            rawContactsText
+          })
+        });
+        const data = await res.json();
+        toast.style.display = 'block';
+        if (res.ok) {
+          toast.style.background = 'rgba(16,185,129,0.2)';
+          toast.style.border = '1px solid #10b981';
+          toast.textContent = `✅ Delivered ${data.sentCount} of ${data.totalAttempted} Free VinoIQ SMS Invites!`;
+          loadDashboard();
+        } else {
+          toast.style.background = 'rgba(239,68,68,0.2)';
+          toast.style.border = '1px solid #ef4444';
+          toast.textContent = '⚠️ ' + (data.error || 'Could not send invites.');
+        }
+      } catch (e) {
+        toast.style.display = 'block';
+        toast.style.textContent = '⚠️ Network error sending invites.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📲 Blast Free SMS Invites Now';
+      }
+    }
+
+    function openNativePhoneSms() {
+      const link = updateRefLink();
+      const msg = (document.getElementById('customMessage').value || '')
+        .replace(/\{name\}/gi, 'there')
+        .replace(/\{link\}/gi, link);
+      window.location.href = `sms:?&body=${encodeURIComponent(msg)}`;
+    }
+
+    function shareWhatsApp() {
+      const link = updateRefLink();
+      const msg = (document.getElementById('customMessage').value || '')
+        .replace(/\{name\}/gi, 'everyone')
+        .replace(/\{link\}/gi, link);
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function copyRefLink() {
+      const link = updateRefLink();
+      navigator.clipboard.writeText(link);
+      alert('Copied your personal free invite link: ' + link);
+    }
+
+    function copyViralBox(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text);
+      alert('Copied viral post to clipboard! Ready to paste into your group chat or social media.');
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

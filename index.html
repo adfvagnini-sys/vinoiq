@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VinoIQ — AI Wine Menu Scanner, Social Profiles & Wine Cellar</title>
+  <style>
+    :root {
+      --bg-deep: #12070C;
+      --bg-card: #1E0D15;
+      --bg-card-alt: #26101B;
+      --border: #3B1A2A;
+      --gold: #D4AF37;
+      --gold-light: #F3D77D;
+      --crimson: #9E1B32;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --pink: #F472B6;
+      --text-main: #F9F1F5;
+      --text-muted: #C4AEB8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+    body {
+      background: radial-gradient(circle at top, #2B0F1C 0%, #0D0408 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .app-shell {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: var(--bg-deep);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    }
+    .app-header {
+      padding: 13px 15px;
+      background: #190910;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      gap: 8px;
+    }
+    .brand-title { font-size: 21px; font-weight: 800; letter-spacing: 0.4px; color: #FFF; }
+    .brand-sub { font-size: 10.5px; color: var(--gold); margin-top: 2px; font-weight: 600; }
+    .header-pills { display: flex; align-items: center; gap: 6px; }
+    .profile-pill {
+      background: #2E1322;
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .content-area {
+      flex: 1;
+      padding: 15px;
+      padding-bottom: 96px;
+      overflow-y: auto;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card-quiz-banner {
+      background: linear-gradient(135deg, #2D1120 0%, #1B0912 100%);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; color: #FFF; }
+    .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.45; margin-bottom: 14px; }
+    .btn-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .btn-gold {
+      flex: 1;
+      background: linear-gradient(135deg, #E2BE4C, #C29B28);
+      color: #12070C;
+      font-weight: 800;
+      font-size: 13.5px;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-outline {
+      flex: 1;
+      background: #29121D;
+      color: #FFF;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--gold);
+      cursor: pointer;
+      text-align: center;
+    }
+    .demo-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .demo-btn {
+      background: #2B131F;
+      color: var(--gold-light);
+      border: 1px solid #4E2439;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .search-box { display: flex; gap: 8px; margin-bottom: 14px; }
+    .search-input, .modal-input {
+      flex: 1;
+      width: 100%;
+      background: #12070C;
+      border: 1px solid #4A2235;
+      color: #FFF;
+      padding: 11px 13px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .search-btn {
+      background: var(--crimson);
+      color: #FFF;
+      border: none;
+      padding: 0 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .label-mini {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.7px;
+      margin: 10px 0 7px;
+      text-transform: uppercase;
+    }
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .venue-chip {
+      background: #29121D;
+      border: 1px solid #452032;
+      padding: 8px 11px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .venue-chip-name { font-size: 13px; font-weight: 700; color: #FFF; }
+    .venue-chip-sub { font-size: 11px; color: #A68B97; }
+    .filter-scroll {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .filter-pill {
+      background: #14080E;
+      color: #D6C2CA;
+      border: 1px solid #3D1C2B;
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .filter-pill.active {
+      background: var(--gold);
+      color: #12070C;
+      border-color: var(--gold);
+      font-weight: 800;
+    }
+    .venue-banner {
+      background: linear-gradient(135deg, #2A101D, #1B0A12);
+      border: 1px solid #522339;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+    .winner-card {
+      background: #1D0C14;
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--gold);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .winner-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .award-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      letter-spacing: 0.4px;
+    }
+    .match-pill {
+      background: #2E1324;
+      border: 1px solid var(--pink);
+      color: #FBCFE8;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .action-btn-group { display: flex; gap: 6px; }
+    .rate-trigger-btn {
+      background: #2C1420;
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .rate-trigger-btn.rated {
+      background: #3B280A;
+      border-color: #FBBF24;
+      color: #FDE68A;
+    }
+    .share-trigger-btn {
+      background: #1D283A;
+      border: 1px solid #60A5FA;
+      color: #BFDBFE;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .wine-title { font-size: 17.5px; font-weight: 800; color: #FFF; line-height: 1.3; }
+    .wine-meta { font-size: 12.5px; color: var(--text-muted); margin: 3px 0 12px; }
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #13070D;
+      border: 1px solid #2F1421;
+      border-radius: 12px;
+      padding: 10px 6px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .price-lbl { font-size: 10px; color: #9E8490; font-weight: 700; }
+    .price-val { font-size: 15.5px; font-weight: 800; color: #FFF; margin-top: 2px; }
+    .sulfite-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .sulfite-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 6px;
+      color: #FFF;
+    }
+    .badge-nsa { background: #064E3B; border: 1px solid var(--emerald); }
+    .badge-organic { background: #451A03; border: 1px solid var(--amber); }
+    .badge-conv { background: #2D1420; }
+    .notes-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .note-tag {
+      background: #2B131F;
+      color: #F3D6E3;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+    }
+    .somm-note { font-size: 13px; color: #E2D4DB; line-height: 1.48; margin-bottom: 12px; }
+    .user-review-box {
+      background: #27180B;
+      border: 1px solid #D97706;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #FEF3C7;
+    }
+    .bars-box {
+      background: #14080E;
+      border: 1px solid #2C1420;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .bar-row { display: flex; align-items: center; margin: 4px 0; font-size: 11px; }
+    .bar-lbl { width: 55px; color: #BFA7B2; font-weight: 600; }
+    .bar-track { flex: 1; height: 7px; background: #2C1420; border-radius: 4px; overflow: hidden; margin: 0 8px; }
+    .bar-fill { height: 100%; background: var(--gold); border-radius: 4px; }
+    .bar-num { width: 28px; text-align: right; color: var(--gold); font-weight: 700; }
+    .sulfite-cta {
+      background: #064E3B;
+      border: 1px solid var(--emerald);
+      padding: 15px;
+      border-radius: 14px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      height: 70px;
+      background: #190A11;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 30;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #9E8490;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      gap: 3px;
+    }
+    .nav-btn.active { color: var(--gold); font-weight: 800; }
+    .nav-icon { font-size: 18px; }
+    .hidden { display: none !important; }
+    .tier-heading { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; margin: 14px 0 10px; }
+
+    /* Quiz Options Styling */
+    .quiz-option {
+      width: 100%;
+      text-align: left;
+      background: #15080E;
+      border: 1px solid #3E1C2C;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .quiz-option.selected {
+      background: #2E1322;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px var(--gold);
+    }
+    .quiz-opt-title { font-size: 14px; font-weight: 700; color: #FFF; }
+    .quiz-opt-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Social Post Card */
+    .social-post-card {
+      background: #1D0C14;
+      border: 1px solid #441E30;
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 14px;
+    }
+    .social-post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #2E1322;
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+    }
+    .friend-card {
+      background: #230E18;
+      border: 1px solid #452032;
+      border-radius: 14px;
+      padding: 12px;
+      min-width: 155px;
+      cursor: pointer;
+    }
+    .friend-card.active-friend {
+      border-color: var(--gold);
+      background: #2E1322;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 440px;
+      background: #1E0D15;
+      border: 1px solid var(--gold);
+      border-radius: 18px;
+      padding: 18px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .star-picker {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .star-btn {
+      font-size: 30px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Header -->
+    <header class="app-header">
+      <div>
+        <div class="brand-title">🍷 VinoIQ <span style="font-size:9px; background:#064E3B; border:1px solid var(--emerald); color:#A7F3D0; padding:2px 6px; border-radius:6px; vertical-align:middle">100% FREE</span> <span style="font-size:9px; background:#2E1322; border:1px solid var(--gold); color:var(--gold-light); padding:2px 6px; border-radius:6px; vertical-align:middle">PATENT PENDING</span></div>
+        <div class="brand-sub">Markup X-Ray™ • Sulfite Scout™ • Wine DNA™</div>
+      </div>
+      <div class="header-pills">
+        <button class="profile-pill" style="background:#064E3B; border-color:var(--emerald); color:#ECFDF5" onclick="openFreeSignupAndInviteModal()">
+          🎁 Invite
+        </button>
+        <button class="profile-pill" style="background:#17251A; border-color:var(--emerald); color:#A7F3D0" onclick="openQrInviteModal()">
+          📱 QR
+        </button>
+        <button class="profile-pill" style="background:#3B280A; border-color:#FBBF24; color:#FDE68A" onclick="openVipModal()">
+          💰 Hub
+        </button>
+        <button id="activeProfileBtn" class="profile-pill" onclick="openProfileModal()">
+          🍷 @adriano
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Scroll Content -->
+    <main class="content-area">
+      <!-- Loading Indicator -->
+      <div id="loadingBox" class="card hidden" style="text-align:center; border-color: var(--gold);">
+        <div style="font-size: 24px; margin-bottom: 6px;">⏳</div>
+        <div style="font-weight: 700;">Analyzing Menu, Markup Value & Your Palate Match...</div>
+      </div>
+
+      <!-- TAB 1: SCAN & FIND -->
+      <section id="tab-scan">
+        <!-- Viral Free Club & Friend Referral + Feedback Banner -->
+        <div class="card" style="background:linear-gradient(135deg,#092E22,#170D12); border-color:var(--emerald); padding:13px; margin-bottom:12px">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap">
+            <div style="flex:1; min-width:190px">
+              <div style="font-size:13px; font-weight:800; color:#A7F3D0">🎁 100% Free Forever • Invite Friends & Help Us Improve!</div>
+              <div style="font-size:11.5px; color:#D1FAE5; margin-top:2px">Share VinoIQ with friends or tell us what features/restaurants to add next!</div>
+            </div>
+            <div style="display:flex; gap:6px">
+              <button class="btn-gold" style="padding:8px 11px; font-size:11.5px; white-space:nowrap" onclick="openFreeSignupAndInviteModal()">
+                🚀 Share Free
+              </button>
+              <button class="btn-outline" style="padding:8px 11px; font-size:11.5px; white-space:nowrap; border-color:var(--gold); color:var(--gold-light)" onclick="openFeedbackModal()">
+                💬 Feedback
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Personal Sommelier Palate Quiz Banner -->
+        <div class="card-quiz-banner">
+          <div class="card-title" style="color:var(--gold-light)">✨ Personalized for <span id="welcomeUserName">Adriano</span></div>
+          <div id="palateBannerText" class="card-desc" style="margin-bottom:10px">
+            Answer 5 quick questions and VinoIQ will figure out your exact Wine DNA and score every bottle on the menu for you.
+          </div>
+          <div class="btn-row" style="margin-bottom:0">
+            <button class="btn-gold" onclick="switchTab('quiz')">🧭 Palate Quiz</button>
+            <button class="btn-outline" onclick="switchTab('friends')">🥂 Friends Feed</button>
+          </div>
+        </div>
+
+        <!-- Camera / Menu Photo Card -->
+        <div class="card">
+          <div class="card-title">📸 Option 1: Take a Picture of the Wine Menu</div>
+          <div class="card-desc">
+            Snap a photo of any physical wine list or upload a picture. VinoIQ reads every bottle and picks the <b>Best Wine</b>, <b>Best Bang for the Buck</b>, <b>Best Flavor</b>, and <b>No-Sulfite</b> options.
+          </div>
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoFile(this)" />
+          <input type="file" id="galleryInput" accept="image/*" class="hidden" onchange="handlePhotoFile(this)" />
+          <div class="btn-row">
+            <button class="btn-gold" onclick="document.getElementById('cameraInput').click()">📷 Snap Menu Photo</button>
+            <button class="btn-outline" onclick="document.getElementById('galleryInput').click()">🖼️ Upload Photo</button>
+          </div>
+          <div class="demo-row">
+            <button class="demo-btn" onclick="runSamplePhotoScan('steakhouse_photo')">⚡ Demo Steakhouse Photo Scan</button>
+            <button class="demo-btn" onclick="runSamplePhotoScan('italian_trattoria_photo')">⚡ Demo Italian Menu Photo</button>
+          </div>
+        </div>
+
+        <!-- Restaurant Lookup Card -->
+        <div class="card">
+          <div class="card-title">📍 Option 2: Type In Where You’re At</div>
+          <div class="card-desc">
+            Type any steakhouse, restaurant, or bar to pull its wine program and highest-value bottles.
+          </div>
+          <div class="search-box">
+            <input
+              id="venueInput"
+              class="search-input"
+              type="text"
+              placeholder="e.g. Prime + Proper, Capital Grille, Bacco..."
+              onkeydown="if(event.key==='Enter') runRestaurantLookup()"
+            />
+            <button class="search-btn" onclick="runRestaurantLookup()">Analyze</button>
+          </div>
+          <div class="label-mini">Popular Restaurants (Tap to Analyze):</div>
+          <div id="quickVenuesGrid" class="chip-grid"></div>
+        </div>
+
+        <!-- Personalize Filters Card -->
+        <div class="card">
+          <div class="card-title">🎯 Taste, Price & Food Pairing Filters</div>
+          <div class="label-mini">Wine Type</div>
+          <div id="filterTypeRow" class="filter-scroll"></div>
+          <div class="label-mini">Flavor Style</div>
+          <div id="filterStyleRow" class="filter-scroll"></div>
+          <div class="label-mini">Budget / Price</div>
+          <div id="filterBudgetRow" class="filter-scroll"></div>
+          <div class="label-mini">What Are You Eating? (Food Pairing)</div>
+          <div id="filterPairingRow" class="filter-scroll"></div>
+        </div>
+      </section>
+
+      <!-- TAB 2: SOMMELIER PALATE QUIZ -->
+      <section id="tab-quiz" class="hidden">
+        <div id="quizContainer"></div>
+      </section>
+
+      <!-- TAB 3: BEST PICKS (RESULTS) -->
+      <section id="tab-results" class="hidden">
+        <div id="resultsContainer"></div>
+      </section>
+
+      <!-- TAB 4: NO SULFITES GUIDE -->
+      <section id="tab-sulfites" class="hidden">
+        <div id="sulfitesContainer"></div>
+      </section>
+
+      <!-- TAB 5: FRIENDS & PROFILES (SHARE WINE WITH FRIENDS) -->
+      <section id="tab-friends" class="hidden">
+        <div id="friendsContainer"></div>
+      </section>
+
+      <!-- TAB 6: MY CELLAR & CUSTOM RATINGS -->
+      <section id="tab-saved" class="hidden">
+        <div id="savedContainer"></div>
+      </section>
+    </main>
+
+    <!-- MODAL 1: Switch or Create Your Personal Profile -->
+    <div id="profileModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="card-title">👤 Switch or Create Your Wine Profile</div>
+        <div class="card-desc">Each profile has its own Palate Quiz DNA, Rated Wine Cellar, and can share bottles with friends!</div>
+
+        <div class="label-mini">Switch to Existing Profile:</div>
+        <div id="existingProfilesList" class="chip-grid" style="margin-bottom:14px"></div>
+
+        <div style="border-top:1px solid #3D1C2B; padding-top:12px">
+          <div class="label-mini">Create or Edit Profile:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px">
+            <div style="width:80px">
+              <div class="label-mini">Icon</div>
+              <select id="profAvatarInput" class="modal-input">
+                <option value="🍷">🍷</option>
+                <option value="🥂">🥂</option>
+                <option value="🍾">🍾</option>
+                <option value="🍇">🍇</option>
+                <option value="👑">👑</option>
+                <option value="🥩">🥩</option>
+              </select>
+            </div>
+            <div style="flex:1">
+              <div class="label-mini">Your Name *</div>
+              <input id="profNameInput" class="modal-input" placeholder="e.g. Sami" />
+            </div>
+          </div>
+          <div class="label-mini">Username (@handle) *</div>
+          <input id="profHandleInput" class="modal-input" placeholder="e.g. sami" style="margin-bottom:8px" />
+          <div class="label-mini">Short Wine Bio</div>
+          <input id="profBioInput" class="modal-input" placeholder="e.g. Big Napa Cabs & Italian Reds" style="margin-bottom:14px" />
+
+          <div class="btn-row" style="margin-bottom:0">
+            <button class="btn-gold" onclick="saveAndSwitchProfile()">✨ Save & Use Profile</button>
+            <button class="btn-outline" onclick="closeProfileModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: Share Wine with Friends (In-App Feed + SMS Text + Link) -->
+    <div id="shareModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="card-title" id="shareModalTitle">📤 Share Wine with Friends</div>
+        <div class="card-desc" id="shareModalSub">Share this bottle to the Friends Wine Feed or text it directly to a friend.</div>
+
+        <div class="label-mini">Tag a Friend on VinoIQ (Optional)</div>
+        <select id="shareToHandleSelect" class="modal-input" style="margin-bottom:8px"></select>
+
+        <div class="label-mini">Your Recommendation Note</div>
+        <textarea
+          id="shareNoteInput"
+          class="modal-input"
+          rows="3"
+          placeholder="e.g. You have to try this bottle at Prime + Proper — unreal flavor and low markup!"
+          style="margin-bottom:10px"
+        ></textarea>
+
+        <div class="label-mini">Also Text Link to Friend's Phone (Optional SMS)</div>
+        <input
+          id="sharePhoneInput"
+          class="modal-input"
+          placeholder="e.g. (248) 444-2842 (leave blank for in-app feed only)"
+          style="margin-bottom:14px"
+        />
+
+        <div class="btn-row" style="margin-bottom:8px">
+          <button class="btn-gold" onclick="submitShareWine()">🥂 Share with Friends</button>
+          <button class="btn-outline" onclick="copyShareLink()">🔗 Copy Link</button>
+        </div>
+        <button class="btn-outline" style="width:100%" onclick="closeShareModal()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- MODAL 3: Rate & Store a Wine in Customer's Personal Cellar -->
+    <div id="rateModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="card-title" id="rateModalTitle">⭐ Rate & Store Wine</div>
+        <div class="card-desc" id="rateModalSub" style="margin-bottom:8px">Tap stars to rate this bottle and store it in your personal cellar.</div>
+
+        <div id="customWineFields" class="hidden">
+          <div class="label-mini">Wine Name & Producer *</div>
+          <input id="customWineName" class="modal-input" placeholder="e.g. Caymus Napa Cabernet 2021" style="margin-bottom:8px" />
+          <div style="display:flex; gap:8px; margin-bottom:8px">
+            <div style="flex:1">
+              <div class="label-mini">Wine Type</div>
+              <select id="customWineType" class="modal-input">
+                <option value="Red">Red Wine</option>
+                <option value="White">White Wine</option>
+                <option value="Rosé">Rosé</option>
+                <option value="Sparkling">Sparkling / Champagne</option>
+              </select>
+            </div>
+            <div style="flex:1">
+              <div class="label-mini">Sulfite Status</div>
+              <select id="customWineSulfite" class="modal-input">
+                <option value="CONVENTIONAL">Standard Wine</option>
+                <option value="NSA">Strictly No Added Sulfites (NSA)</option>
+                <option value="LOW_ORGANIC">Certified Organic / Low Sulfite</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; margin-bottom:8px">
+            <div style="flex:1">
+              <div class="label-mini">Grape Varietal</div>
+              <input id="customWineVarietal" class="modal-input" placeholder="e.g. Cabernet Sauvignon" />
+            </div>
+            <div style="width:110px">
+              <div class="label-mini">Price Paid ($)</div>
+              <input id="customWinePrice" type="number" class="modal-input" placeholder="65" />
+            </div>
+          </div>
+        </div>
+
+        <div class="label-mini" style="text-align:center">Your Personal Star Rating</div>
+        <div class="star-picker" id="starPickerRow"></div>
+        <div id="starRatingLabel" style="text-align:center; font-size:13px; font-weight:700; color:var(--gold-light); margin-bottom:10px">
+          5 ★ — All-Time Favorite!
+        </div>
+
+        <div class="label-mini">Where Did You Have It?</div>
+        <input id="rateVenueInput" class="modal-input" placeholder="e.g. Prime + Proper, At Home, Bacco..." style="margin-bottom:10px" />
+
+        <div class="label-mini">Your Personal Tasting Notes</div>
+        <textarea
+          id="rateNotesInput"
+          class="modal-input"
+          rows="3"
+          placeholder="e.g. Paired great with the ribeye, super smooth finish, zero headache!"
+          style="margin-bottom:10px"
+        ></textarea>
+
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+          <input type="checkbox" id="rateOrderAgain" checked style="width:18px; height:18px; accent-color:var(--gold)" />
+          <label for="rateOrderAgain" style="font-size:13px; color:#FFF; font-weight:600">Would order / buy this wine again</label>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px">
+          <input type="checkbox" id="rateShareFeed" checked style="width:18px; height:18px; accent-color:var(--gold)" />
+          <label for="rateShareFeed" style="font-size:13px; color:var(--gold-light); font-weight:700">🥂 Also share my rating to the Friends Wine Feed</label>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn-gold" onclick="submitWineRating()">💾 Save Rating</button>
+          <button class="btn-outline" onclick="closeRateModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 4: Dinner Table QR Code Invite (Viral Growth Loop) -->
+    <div id="qrModal" class="modal-backdrop hidden">
+      <div class="modal-card" style="text-align:center">
+        <div class="card-title">📱 Invite Your Dinner Table to VinoIQ™</div>
+        <div class="card-desc">
+          Have your friends point their phone camera at this QR code to open VinoIQ™, take the 30-second Palate Quiz, and view your shared wine cellar!
+        </div>
+        <div style="background:#FFF; padding:16px; border-radius:16px; display:inline-block; margin-bottom:12px">
+          <img id="qrCodeImg" src="" alt="VinoIQ QR Code" style="width:210px; height:210px; display:block" />
+        </div>
+        <div id="qrPublicUrlText" style="font-size:11.5px; color:var(--gold-light); word-break:break-all; margin-bottom:14px; font-weight:700"></div>
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn-gold" onclick="copyShareLink()">🔗 Copy Invite Link</button>
+          <button class="btn-outline" onclick="document.getElementById('qrModal').classList.add('hidden')">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 5: VinoIQ VIP Pro & Monetization Hub -->
+    <div id="vipModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+          <div class="card-title" style="color:var(--gold-light); margin-bottom:0">👑 VinoIQ™ Sommelier VIP Pro</div>
+          <span style="font-size:10px; background:#064E3B; color:#A7F3D0; border:1px solid var(--emerald); padding:3px 7px; border-radius:6px; font-weight:800">PATENT PENDING</span>
+        </div>
+        <div class="card-desc">
+          Save $35–$80 on a single steakhouse bottle with our proprietary <b>Markup X-Ray™</b> & <b>Two-Tier Sulfite Scout™</b>.
+        </div>
+
+        <div style="background:#14080E; border:1px solid var(--gold); border-radius:12px; padding:12px; margin-bottom:12px">
+          <div style="font-size:13px; font-weight:800; color:#FFF; margin-bottom:6px">✨ Included in VIP Pro ($4.99/mo or $29.99/yr):</div>
+          <div style="font-size:12px; color:#E2D4DB; line-height:1.6">
+            ✅ <b>Unlimited Camera Menu OCR Scans</b><br/>
+            ✅ <b>Full Restaurant-to-Retail Markup X-Ray™</b> (Beat 3x markups)<br/>
+            ✅ <b>Two-Tier Sulfite & Headache Risk Scanner</b> (NSA + Organic ppm)<br/>
+            ✅ <b>Direct Retail Bottle Delivery & $30 Clean Wine Club Perks</b>
+          </div>
+        </div>
+
+        <!-- Founder Live Monetization & Affiliate Revenue Tracker -->
+        <div style="background:#1B1018; border:1px solid #4A2235; border-radius:12px; padding:12px; margin-bottom:14px">
+          <div class="label-mini" style="margin-top:0">💰 FOUNDER LIVE MONETIZATION DASHBOARD</div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; text-align:center">
+            <div style="background:#12070C; padding:8px; border-radius:8px">
+              <div style="font-size:10px; color:#9E8490">RETAIL CLICKS</div>
+              <div id="statRetailClicks" style="font-size:16px; font-weight:800; color:#FFF">0</div>
+            </div>
+            <div style="background:#12070C; padding:8px; border-radius:8px">
+              <div style="font-size:10px; color:#9E8490">CLEAN BOXES</div>
+              <div id="statCleanClicks" style="font-size:16px; font-weight:800; color:#34D399">0</div>
+            </div>
+            <div style="background:#12070C; padding:8px; border-radius:8px">
+              <div style="font-size:10px; color:#9E8490">EST. REVENUE</div>
+              <div id="statEstRev" style="font-size:16px; font-weight:800; color:var(--gold-light)">$29.99</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:8px">
+          <button class="btn-gold" onclick="window.location.href='/growth.html'">🚀 Open Viral SMS Blaster & Growth Hub</button>
+          <button class="btn-outline" onclick="document.getElementById('vipModal').classList.add('hidden')">Close</button>
+        </div>
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="demo-btn" style="flex:1" onclick="window.open('/VinoIQ_USPTO_Provisional_Patent.pdf','_blank')">
+            📜 View USPTO Patent PDF
+          </button>
+          <button class="demo-btn" style="flex:1" onclick="window.open('/qr-card.html','_blank')">
+            🖨️ Printable QR Table Card
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 6: Free Forever Signup + Instant Friend SMS Invite & $25 Credit Loop -->
+    <div id="freeSignupModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+          <div class="card-title" style="color:#A7F3D0; margin-bottom:0">🎁 VinoIQ™ Free Club & Invite Rewards</div>
+          <span style="font-size:10px; background:#064E3B; color:#ECFDF5; border:1px solid var(--emerald); padding:3px 7px; border-radius:6px; font-weight:800">100% FREE</span>
+        </div>
+        <div class="card-desc" id="referralWelcomeSubtitle">
+          VinoIQ is 100% FREE forever! Invite friends via text to earn <b>$10 Clean Wine Credit per friend</b>, or claim your personal free @handle below:
+        </div>
+
+        <!-- Section A: Send Free App Invite to Friends Right Now -->
+        <div style="background:#14080E; border:1px solid var(--emerald); border-radius:12px; padding:12px; margin-bottom:12px">
+          <div class="label-mini" style="color:#6EE7B7; margin-top:0">📲 SEND FREE VINOIQ INVITE TO FRIENDS (EARN $10 CREDIT EACH):</div>
+          <input
+            id="quickInvitePhonesInput"
+            class="modal-input"
+            placeholder="Friend Name & Phone (e.g. Mike 248-555-1234)"
+            style="margin-bottom:8px"
+          />
+          <div class="btn-row" style="margin-bottom:6px">
+            <button class="btn-gold" style="background:linear-gradient(135deg,#10B981,#059669); color:#FFF" onclick="quickSendFriendSmsInvite()">
+              🚀 Text Free Invite Now
+            </button>
+            <button class="btn-outline" onclick="copyPersonalReferralLink()">
+              🔗 Copy My Invite Link
+            </button>
+          </div>
+          <div id="quickInviteStatus" style="font-size:11.5px; color:#A7F3D0; font-weight:700"></div>
+        </div>
+
+        <!-- Section B: New Visitor 5-Second Free Profile Claim -->
+        <div style="background:#1B0C14; border:1px solid #4A2235; border-radius:12px; padding:12px; margin-bottom:12px">
+          <div class="label-mini" style="margin-top:0; color:var(--gold-light)">🍷 NEW HERE? CLAIM YOUR FREE PROFILE IN 5 SECONDS:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px">
+            <input id="freeSignupName" class="modal-input" placeholder="Your First Name *" style="flex:1" />
+            <input id="freeSignupHandle" class="modal-input" placeholder="@handle (optional)" style="flex:1" />
+          </div>
+          <input id="freeSignupPhone" class="modal-input" placeholder="Your Cell # (We'll text your personal save link)" style="margin-bottom:8px" />
+          <button class="btn-gold" style="width:100%; padding:10px" onclick="submitFreeUserSignup()">
+            ✨ Claim My 100% Free VinoIQ Profile
+          </button>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="demo-btn" style="flex:1" onclick="window.location.href='/growth.html'">
+            📣 Open Full Batch SMS & Social Growth Hub
+          </button>
+          <button class="btn-outline" onclick="document.getElementById('freeSignupModal').classList.add('hidden')">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 7: Multi-Retailer Bottle Price Comparison & Affiliate Order -->
+    <div id="retailOrderModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="card-title" id="retailModalWineTitle">🛒 Order Bottle at Retail Price</div>
+        <div class="card-desc" id="retailModalSavingsSub">
+          Beat the restaurant markup! Choose your preferred delivery or pickup partner below:
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px">
+          <button class="btn-gold" style="width:100%; justify-content:space-between; display:flex; align-items:center; padding:12px 14px" onclick="selectRetailPartner('wine_com')">
+            <span>🍷 <b>Wine.com</b> (Ship to Door • Top Selection)</span>
+            <span id="retailPriceBadge1" style="background:#16080E; color:var(--gold-light); padding:3px 8px; border-radius:6px; font-size:12px">$48</span>
+          </button>
+          <button class="btn-outline" style="width:100%; justify-content:space-between; display:flex; align-items:center; padding:12px 14px; border-color:var(--emerald); color:#ECFDF5" onclick="selectRetailPartner('instacart')">
+            <span>⚡ <b>Instacart Wine</b> (1-Hour Local Delivery)</span>
+            <span style="color:#6EE7B7; font-size:12px; font-weight:800">Same-Day →</span>
+          </button>
+          <button class="btn-outline" style="width:100%; justify-content:space-between; display:flex; align-items:center; padding:12px 14px" onclick="selectRetailPartner('total_wine')">
+            <span>🏪 <b>Total Wine & More</b> (Local Store Pickup)</span>
+            <span style="color:var(--gold-light); font-size:12px; font-weight:800">Check Stock →</span>
+          </button>
+          <button class="btn-outline" style="width:100%; justify-content:space-between; display:flex; align-items:center; padding:12px 14px" onclick="selectRetailPartner('vivino')">
+            <span>🍇 <b>Vivino Marketplace</b> (Verified Merchant Match)</span>
+            <span style="color:var(--gold-light); font-size:12px; font-weight:800">Compare →</span>
+          </button>
+        </div>
+
+        <div style="background:#132620; border:1px solid var(--emerald); border-radius:12px; padding:11px; margin-bottom:12px; text-align:center">
+          <div style="font-size:12px; font-weight:800; color:#ECFDF5; margin-bottom:4px">🌿 Want 100% Sulfite-Free Organic Wines Instead?</div>
+          <button class="demo-btn" style="width:100%; background:#059669; color:#FFF; border:none" onclick="claimCleanWineBoxOffer()">
+            📦 Get 6 Organic No-Sulfite Bottles Delivered ($30 Off) →
+          </button>
+        </div>
+
+        <button class="btn-outline" style="width:100%" onclick="document.getElementById('retailOrderModal').classList.add('hidden')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- MODAL 8: Community, Wine Club & Sommelier Feedback Modal -->
+    <div id="feedbackModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="card-title" style="color:var(--gold-light)">💬 Help Us Make VinoIQ™ Even Better!</div>
+        <div class="card-desc">
+          We built VinoIQ™ for wine lovers, sommeliers, and restaurant diners. What features, restaurants, or improvements would you love to see next? (Goes directly to Founder Adriano Vagnini’s phone!)
+        </div>
+
+        <div class="label-mini">Your Name *</div>
+        <input id="fbkName" class="modal-input" placeholder="e.g. Sarah / Sommelier / Wine Lover" style="margin-bottom:8px" />
+
+        <div class="label-mini">Wine Club, Facebook Group, or Restaurant (Optional)</div>
+        <input id="fbkGroup" class="modal-input" placeholder="e.g. Detroit Wine Org, Wine Lovers FB, The Royce..." style="margin-bottom:8px" />
+
+        <div class="label-mini">How Can We Make VinoIQ™ Better for You? *</div>
+        <textarea
+          id="fbkText"
+          class="modal-input"
+          rows="4"
+          placeholder="Tell us which local restaurants to add, features you want, or what you think of the Markup X-Ray & Sulfite Scout..."
+          style="margin-bottom:8px"
+        ></textarea>
+
+        <div class="label-mini">Your Email or Phone (Optional — if you want a reply)</div>
+        <input id="fbkContact" class="modal-input" placeholder="e.g. sarah@email.com or (248) 555-0199" style="margin-bottom:14px" />
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn-gold" onclick="submitCommunityFeedback()">🚀 Send Feedback to Founder</button>
+          <button class="btn-outline" onclick="document.getElementById('feedbackModal').classList.add('hidden')">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation (6 Compact Tabs) -->
+    <nav class="bottom-nav">
+      <button id="nav-scan" class="nav-btn active" onclick="switchTab('scan')">
+        <span class="nav-icon">📸</span>
+        <span>Scan</span>
+      </button>
+      <button id="nav-quiz" class="nav-btn" onclick="switchTab('quiz')">
+        <span class="nav-icon">🧭</span>
+        <span>Quiz</span>
+      </button>
+      <button id="nav-results" class="nav-btn" onclick="switchTab('results')">
+        <span class="nav-icon">🏆</span>
+        <span>Picks</span>
+      </button>
+      <button id="nav-sulfites" class="nav-btn" onclick="switchTab('sulfites')">
+        <span class="nav-icon">🌿</span>
+        <span>Sulfites</span>
+      </button>
+      <button id="nav-friends" class="nav-btn" onclick="switchTab('friends')">
+        <span class="nav-icon">🥂</span>
+        <span>Friends</span>
+      </button>
+      <button id="nav-saved" class="nav-btn" onclick="switchTab('saved')">
+        <span class="nav-icon">⭐</span>
+        <span id="savedNavLabel">Cellar (0)</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    // Transparent Cloud-to-Tunnel API Router (Allows permanent clean URL without showing .trycloudflare.com)
+    (function() {
+      const origFetch = window.fetch.bind(window);
+      let resolvedBasePromise = null;
+      function getApiBase() {
+        if (!window.location.hostname.includes('github.io')) return Promise.resolve('');
+        if (!resolvedBasePromise) {
+          resolvedBasePromise = origFetch('./live_url.json?t=' + Date.now(), { cache: 'no-store' })
+            .then(r => r.json())
+            .then(d => (d.apiTunnelUrl || '').replace(/\/$/, ''))
+            .catch(() => '');
+        }
+        return resolvedBasePromise;
+      }
+      window.fetch = async function(input, init) {
+        if (typeof input === 'string' && input.startsWith('/api/')) {
+          const base = await getApiBase();
+          if (base) input = base + input;
+        }
+        return origFetch(input, init);
+      };
+    })();
+
+    function openFeedbackModal() {
+      document.getElementById('feedbackModal').classList.remove('hidden');
+    }
+
+    async function submitCommunityFeedback() {
+      const name = document.getElementById('fbkName').value.trim() || state.activeProfile?.name || 'Wine Lover';
+      const clubOrGroup = document.getElementById('fbkGroup').value.trim();
+      const feedbackText = document.getElementById('fbkText').value.trim();
+      const contactInfo = document.getElementById('fbkContact').value.trim();
+      if (!feedbackText) {
+        alert('Please type your feedback or suggestion first!');
+        return;
+      }
+      const res = await fetch('/api/growth/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, clubOrGroup, rating: 5, feedbackText, contactInfo })
+      });
+      if (res.ok) {
+        document.getElementById('fbkText').value = '';
+        document.getElementById('feedbackModal').classList.add('hidden');
+        alert('🍷 Thank you! Your feedback was just sent directly to Founder Adriano Vagnini’s phone!');
+      }
+    }
+
+    const QUIZ_QUESTIONS = [
+      {
+        key: 'coffee',
+        title: '1. How do you take your morning coffee or tea?',
+        subtitle: 'Tells us how much tannin structure vs. velvety smoothness your palate loves.',
+        options: [
+          { value: 'bold', label: '☕ Black Espresso / Dark Roast', desc: 'I love bold intensity, structure & rich depth' },
+          { value: 'balanced', label: '🥛 Coffee with a Splash of Cream', desc: 'Balanced richness with a smooth finish' },
+          { value: 'sweet', label: '🍦 Vanilla Latte / Sweet Iced Coffee', desc: 'Plush, silky texture with zero bitterness' },
+          { value: 'crisp', label: '🍋 Green Tea or Lemon Water', desc: 'Bright, refreshing, and clean' }
+        ]
+      },
+      {
+        key: 'fruit',
+        title: '2. Which fruit & flavor notes sound most appealing?',
+        subtitle: 'Matches grape varietals to the flavors you naturally gravitate toward.',
+        options: [
+          { value: 'dark_berry', label: '🫐 Dark Blackberry, Black Cherry & Cocoa', desc: 'Cabernet Sauvignon, Nebbiolo, Super Tuscan' },
+          { value: 'red_berry', label: '🍓 Juicy Strawberry, Raspberry & Warm Vanilla', desc: 'Pinot Noir, Barbera, Merlot, Malbec' },
+          { value: 'citrus', label: '🍏 Crisp Green Apple, Meyer Lemon & Mineral', desc: 'Sancerre, Sauvignon Blanc, Dry Rosé, Prosecco' },
+          { value: 'tropical', label: '🍑 Baked Peach, Honeycomb & Creamy Brioche', desc: 'Carneros Chardonnay, Moscato d’Asti' }
+        ]
+      },
+      {
+        key: 'sweetness',
+        title: '3. Where do you land on dryness vs. sweetness?',
+        subtitle: 'Ensures we never recommend a bottle that feels too bitter or too sweet.',
+        options: [
+          { value: 'bone_dry', label: '🏜️ Bone-Dry (Zero Sweetness)', desc: 'Classic European & structured Napa style' },
+          { value: 'smooth_dry', label: '🍒 Dry, But Lush & Fruit-Forward', desc: 'Juicy ripe fruit without residual sugar' },
+          { value: 'off_dry', label: '🌸 A Touch of Smooth Sweetness', desc: 'Soft, easy-drinking crowd pleasers' },
+          { value: 'sweet', label: '🍯 Sweet, Fruity & Refreshing', desc: 'Moscato d’Asti & sweet aromatic whites' }
+        ]
+      },
+      {
+        key: 'sulfites',
+        title: '4. Do wines ever give you a headache or flushed skin?',
+        subtitle: 'We can prioritize Strictly No Added Sulfites (NSA) & Certified Organic bottles.',
+        options: [
+          { value: 'strict_nsa', label: '🟢 Yes! Prioritize Strictly No Added Sulfites (NSA)', desc: 'Show 0 ppm added sulfite & cleanest organic bottles first' },
+          { value: 'prefer_low', label: '🌿 Sometimes — Prefer Certified Organic / Low-Sulfite', desc: 'Boost low-intervention & biodynamic wines (~18–35 ppm)' },
+          { value: 'no_issue', label: '🍷 No Issues — Show Me All Top Bottles', desc: 'Include both conventional icons and organic gems' }
+        ]
+      },
+      {
+        key: 'budgetVibe',
+        title: '5. What is your target budget for tonight?',
+        subtitle: 'We always calculate retail markup to find the best bang for your buck.',
+        options: [
+          { value: 'value', label: '💰 Best Bang for the Buck (Under $55/bottle)', desc: 'Maximum quality at the lowest restaurant markup' },
+          { value: 'mid', label: '🥩 Dinner Night Out (Up to $90/bottle)', desc: 'Sweet spot for top reserve & organic estate bottles' },
+          { value: 'luxury', label: '🏆 Special Occasion (Any Price / Trophy Wines)', desc: 'Show the highest-rated bottles on the list' }
+        ]
+      }
+    ];
+
+    const STAR_DESCRIPTIONS = {
+      1: '1 ★ — Not for me (Will avoid similar styles)',
+      2: '2 ★ — Underwhelming',
+      3: '3 ★ — Solid, enjoyable bottle',
+      4: '4 ★ — Great bottle! Boost similar wines',
+      5: '5 ★ — All-Time Favorite! Top palate match'
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialHandle = urlParams.get('profile') || localStorage.getItem('vinoiq_handle') || 'adriano';
+
+    const state = {
+      activeTab: 'scan',
+      userHandle: initialHandle,
+      activeProfile: null,
+      allProfiles: [],
+      socialFeed: [],
+      inspectedFriendHandle: null,
+      lastAnalysis: null,
+      favorites: [],
+      scanHistory: [],
+      palateProfile: null,
+      quizAnswers: {
+        coffee: 'balanced',
+        fruit: 'dark_berry',
+        sweetness: 'smooth_dry',
+        sulfites: 'prefer_low',
+        budgetVibe: 'mid'
+      },
+      ratingModalTargetWine: null,
+      ratingModalIsCustom: false,
+      ratingModalStars: 5,
+      shareModalTargetWine: null,
+      filters: {
+        wineType: 'All',
+        wineStyle: 'All',
+        budget: 'Any Price',
+        foodPairing: 'All'
+      }
+    };
+
+    const WINE_TYPES = ['All', 'Red', 'White', 'Rosé', 'Sparkling'];
+    const WINE_STYLES = ['All', 'Bold & Full', 'Dry & Crisp', 'Smooth & Fruity', 'Sweet'];
+    const BUDGETS = ['Any Price', 'Under $18/glass', 'Under $55/bottle', 'Under $90/bottle'];
+    const PAIRINGS = ['All', 'Steak / Red Meat', 'Seafood / Fish', 'Pasta / Italian', 'Poultry / Pork', 'Cheese / Appetizers', 'Just Drinking'];
+
+    async function initApp() {
+      renderFilterPills();
+      await loadRestaurants();
+      await loadUserData();
+      renderQuizTab();
+      await runRestaurantLookup('Prime + Proper', false);
+      if (urlParams.get('profile')) {
+        state.inspectedFriendHandle = urlParams.get('profile');
+      }
+    }
+
+    function renderFilterPills() {
+      const bindRow = (elId, items, filterKey) => {
+        const container = document.getElementById(elId);
+        container.innerHTML = items.map(item => `
+          <button class="filter-pill ${state.filters[filterKey] === item ? 'active' : ''}"
+            onclick="updateFilter('${filterKey}', '${item.replace(/'/g, "\\'")}')">${item}</button>
+        `).join('');
+      };
+      bindRow('filterTypeRow', WINE_TYPES, 'wineType');
+      bindRow('filterStyleRow', WINE_STYLES, 'wineStyle');
+      bindRow('filterBudgetRow', BUDGETS, 'budget');
+      bindRow('filterPairingRow', PAIRINGS, 'foodPairing');
+    }
+
+    async function updateFilter(key, val) {
+      state.filters[key] = val;
+      renderFilterPills();
+      if (state.lastAnalysis) {
+        await runRestaurantLookup(state.lastAnalysis.venueName, false);
+      }
+    }
+
+    async function loadRestaurants() {
+      const res = await fetch('/api/restaurants');
+      const data = await res.json();
+      const grid = document.getElementById('quickVenuesGrid');
+      grid.innerHTML = (data.restaurants || []).map(r => `
+        <button class="venue-chip" onclick="selectQuickVenue('${r.name.replace(/'/g, "\\'")}')">
+          <div class="venue-chip-name">${r.name}</div>
+          <div class="venue-chip-sub">${r.city}</div>
+        </button>
+      `).join('');
+    }
+
+    async function loadUserData() {
+      const res = await fetch(`/api/user-data?userHandle=${encodeURIComponent(state.userHandle)}`);
+      const data = await res.json();
+      state.activeProfile = data.activeProfile;
+      state.favorites = data.favorites || [];
+      state.scanHistory = data.scanHistory || [];
+      state.palateProfile = data.palateProfile || null;
+      state.allProfiles = data.allProfiles || [];
+      state.socialFeed = data.socialFeed || [];
+
+      if (state.palateProfile && state.palateProfile.answers) {
+        state.quizAnswers = { ...state.quizAnswers, ...state.palateProfile.answers };
+      }
+
+      document.getElementById('activeProfileBtn').textContent =
+        `${state.activeProfile?.avatar || '🍷'} @${state.activeProfile?.handle || state.userHandle}`;
+      document.getElementById('welcomeUserName').textContent =
+        state.activeProfile?.name || state.userHandle;
+
+      updatePalateBanner();
+      document.getElementById('savedNavLabel').textContent = `Cellar (${state.favorites.length})`;
+      renderSavedTab();
+      renderFriendsTab();
+    }
+
+    function updatePalateBanner() {
+      const bannerEl = document.getElementById('palateBannerText');
+      if (state.palateProfile) {
+        bannerEl.innerHTML = `Your Wine DNA: <b style="color:#FFF">${state.palateProfile.archetypeTitle}</b> (${state.palateProfile.topVarietals.slice(0, 3).join(', ')}). Every menu scan is now scored for your palate!`;
+      } else {
+        bannerEl.innerHTML = `Answer 5 quick questions and VinoIQ will figure out your exact Wine DNA and score every bottle on the menu for you.`;
+      }
+    }
+
+    // === PROFILE SWITCHER & CREATOR MODAL ===
+    function openProfileModal() {
+      const listEl = document.getElementById('existingProfilesList');
+      listEl.innerHTML = (state.allProfiles || []).map(p => `
+        <button class="venue-chip" style="border-color:${p.handle === state.userHandle ? 'var(--gold)' : '#452032'}"
+          onclick="switchActiveProfile('${p.handle}')">
+          <div class="venue-chip-name">${p.avatar || '🍷'} ${p.name} (@${p.handle})</div>
+          <div class="venue-chip-sub">${(p.favorites || []).length} rated wines</div>
+        </button>
+      `).join('');
+
+      document.getElementById('profNameInput').value = state.activeProfile?.name || '';
+      document.getElementById('profHandleInput').value = state.activeProfile?.handle || '';
+      document.getElementById('profBioInput').value = state.activeProfile?.bio || '';
+      document.getElementById('profileModal').classList.remove('hidden');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.add('hidden');
+    }
+
+    async function switchActiveProfile(handle) {
+      state.userHandle = handle;
+      localStorage.setItem('vinoiq_handle', handle);
+      closeProfileModal();
+      await loadUserData();
+      renderQuizTab();
+      if (state.lastAnalysis) {
+        await runRestaurantLookup(state.lastAnalysis.venueName, false);
+      }
+    }
+
+    async function saveAndSwitchProfile() {
+      const name = document.getElementById('profNameInput').value.trim();
+      const handle = document.getElementById('profHandleInput').value.trim() || name;
+      const avatar = document.getElementById('profAvatarInput').value;
+      const bio = document.getElementById('profBioInput').value.trim();
+      if (!name) {
+        alert('Please enter your name.');
+        return;
+      }
+      const res = await fetch('/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ handle, name, avatar, bio })
+      });
+      const data = await res.json();
+      if (data.profile) {
+        await switchActiveProfile(data.profile.handle);
+      }
+    }
+
+    // === SHARE WINE WITH FRIENDS MODAL ===
+    function openShareModalById(wineId) {
+      const pool = [
+        ...(state.lastAnalysis?.allAnalyzedWines || []),
+        ...state.favorites,
+        ...(state.socialFeed || []).map(p => p.wine)
+      ];
+      const wine = pool.find(w => w && w.id === wineId);
+      if (!wine) return;
+
+      state.shareModalTargetWine = wine;
+      document.getElementById('shareModalTitle').textContent = `📤 Share: ${wine.name}`;
+      document.getElementById('shareModalSub').textContent = `${wine.varietal} • $${wine.menuBottlePrice}/bottle (${wine.markupMultiple || 2.0}x retail)`;
+
+      const friendsSelect = document.getElementById('shareToHandleSelect');
+      const otherProfiles = (state.allProfiles || []).filter(p => p.handle !== state.userHandle);
+      friendsSelect.innerHTML = `<option value="">🥂 Share with All Friends on Feed</option>` +
+        otherProfiles.map(p => `<option value="${p.handle}">${p.avatar || '🍷'} Tag ${p.name} (@${p.handle})</option>`).join('');
+
+      document.getElementById('shareNoteInput').value =
+        `You have to try ${wine.name} (${wine.varietal})! ${wine.sulfiteStatus === 'NSA' ? 'Strictly No Added Sulfites (NSA)!' : ''}`;
+      document.getElementById('sharePhoneInput').value = '';
+      document.getElementById('shareModal').classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.add('hidden');
+    }
+
+    async function submitShareWine() {
+      if (!state.shareModalTargetWine) return;
+      const toHandle = document.getElementById('shareToHandleSelect').value;
+      const message = document.getElementById('shareNoteInput').value;
+      const friendPhone = document.getElementById('sharePhoneInput').value.trim();
+
+      const res = await fetch('/api/share-wine', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fromHandle: state.userHandle,
+          toHandle,
+          friendPhone,
+          message,
+          venueName: state.lastAnalysis?.venueName || 'VinoIQ',
+          userRating: state.shareModalTargetWine.userRating || 5,
+          wine: state.shareModalTargetWine
+        })
+      });
+      const data = await res.json();
+      state.socialFeed = data.socialFeed || state.socialFeed;
+      closeShareModal();
+      renderFriendsTab();
+      switchTab('friends');
+      if (data.smsSent) {
+        alert('Shared to the Friends Feed AND sent via SMS text message!');
+      }
+    }
+
+    async function copyShareLink() {
+      const shareUrl = `${window.location.origin}/?profile=${encodeURIComponent(state.userHandle)}`;
+      if (navigator.share && state.shareModalTargetWine) {
+        try {
+          await navigator.share({
+            title: `${state.activeProfile?.name || 'My'} Wine Pick on VinoIQ`,
+            text: `Check out ${state.shareModalTargetWine.name} recommended by @${state.userHandle} on VinoIQ!`,
+            url: shareUrl
+          });
+          return;
+        } catch (e) {}
+      }
+      navigator.clipboard?.writeText(shareUrl);
+      alert(`Copied your shareable profile link:\n${shareUrl}`);
+    }
+
+    async function cheersFeedPost(postId) {
+      const res = await fetch(`/api/feed/${encodeURIComponent(postId)}/interact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cheers', authorHandle: state.userHandle })
+      });
+      const data = await res.json();
+      state.socialFeed = data.socialFeed || state.socialFeed;
+      renderFriendsTab();
+    }
+
+    async function commentOnFeedPost(postId) {
+      const inputEl = document.getElementById(`comment-input-${postId}`);
+      if (!inputEl || !inputEl.value.trim()) return;
+      const res = await fetch(`/api/feed/${encodeURIComponent(postId)}/interact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'comment',
+          authorHandle: state.userHandle,
+          commentText: inputEl.value.trim()
+        })
+      });
+      const data = await res.json();
+      state.socialFeed = data.socialFeed || state.socialFeed;
+      renderFriendsTab();
+    }
+
+    function inspectFriendProfile(handle) {
+      state.inspectedFriendHandle = handle;
+      renderFriendsTab();
+    }
+
+    function renderFriendsTab() {
+      const profiles = state.allProfiles || [];
+      const inspected = profiles.find(p => p.handle === (state.inspectedFriendHandle || state.userHandle)) || state.activeProfile;
+      const profileShareLink = `${window.location.origin}/?profile=${encodeURIComponent(state.userHandle)}`;
+
+      const profilesStrip = profiles.map(p => `
+        <div class="friend-card ${inspected && inspected.handle === p.handle ? 'active-friend' : ''}"
+          onclick="inspectFriendProfile('${p.handle}')">
+          <div style="font-size:15px; font-weight:800; color:#FFF">${p.avatar || '🍷'} ${p.name}</div>
+          <div style="font-size:11px; color:var(--gold)">@${p.handle}</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px">
+            ⭐ ${(p.favorites || []).length} Rated Wines
+          </div>
+        </div>
+      `).join('');
+
+      const inspectedCellarHtml = inspected ? `
+        <div class="card" style="border-color:var(--gold)">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+            <div>
+              <div class="card-title" style="margin-bottom:2px">${inspected.avatar || '🍷'} ${inspected.name}’s Wine Profile (@${inspected.handle})</div>
+              <div style="font-size:12px; color:var(--text-muted)">${inspected.bio || 'Wine Explorer on VinoIQ'}</div>
+            </div>
+            ${inspected.handle !== state.userHandle ? `
+              <button class="demo-btn" onclick="switchActiveProfile('${inspected.handle}')">Switch to @${inspected.handle}</button>
+            ` : ''}
+          </div>
+          ${inspected.archetypeTitle || inspected.palateProfile?.archetypeTitle ? `
+            <div style="background:#2A121F; padding:10px; border-radius:10px; border:1px solid #4E2238; margin-bottom:10px; font-size:12px">
+              🧭 <b>Wine DNA:</b> ${inspected.archetypeTitle || inspected.palateProfile?.archetypeTitle}
+            </div>
+          ` : ''}
+          <div class="label-mini">⭐ ${inspected.name}’s Rated Wines (${(inspected.favorites || []).length}):</div>
+          ${
+            (inspected.favorites || []).length === 0
+              ? `<div style="font-size:12px; color:var(--text-muted)">No rated wines yet.</div>`
+              : (inspected.favorites || []).slice(0, 3).map(w => `
+                  <div style="background:#14080E; border:1px solid #351826; border-radius:10px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px">
+                    <div>
+                      <div style="font-size:13px; font-weight:800; color:#FFF">${w.name}</div>
+                      <div style="font-size:11.5px; color:#FBBF24">${'★'.repeat(w.userRating || 5)} (${w.userRating || 5}/5) ${w.venueEnjoyed ? `• @ ${w.venueEnjoyed}` : ''}</div>
+                      ${w.userNotes ? `<div style="font-size:11.5px; color:#E2D4DB; font-style:italic; margin-top:2px">"${w.userNotes}"</div>` : ''}
+                    </div>
+                    <button class="rate-trigger-btn" onclick="openRateModalById('${w.id}')">⭐ Save</button>
+                  </div>
+                `).join('')
+          }
+        </div>
+      ` : '';
+
+      const feedHtml = (state.socialFeed || []).map(post => {
+        const w = post.wine || {};
+        return `
+          <div class="social-post-card">
+            <div class="social-post-header">
+              <div style="display:flex; align-items:center; gap:10px">
+                <div class="avatar-circle">${post.fromAvatar || '🍷'}</div>
+                <div>
+                  <div style="font-size:14px; font-weight:800; color:#FFF">
+                    ${post.fromName} <span style="color:var(--gold); font-weight:600">@${post.fromHandle}</span>
+                    ${post.toHandle ? `<span style="color:var(--text-muted)"> ➔ </span><span style="color:#F472B6">@${post.toHandle}</span>` : ''}
+                  </div>
+                  <div style="font-size:11px; color:var(--text-muted)">📍 ${post.venueName || 'Shared Recommendation'}</div>
+                </div>
+              </div>
+              <span style="color:#FBBF24; font-size:13px; font-weight:800">${'★'.repeat(post.userRating || 5)}</span>
+            </div>
+
+            <div style="font-size:13.5px; color:#FFF; line-height:1.45; margin-bottom:10px">
+              "${post.message}"
+            </div>
+
+            <div style="background:#13070D; border:1px solid #351726; border-radius:12px; padding:12px; margin-bottom:10px">
+              <div style="font-size:15px; font-weight:800; color:var(--gold-light)">🍷 ${w.name || 'Featured Bottle'}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px">
+                ${w.varietal || ''} • $${w.menuBottlePrice || 48}/bottle • ${w.sulfiteStatus === 'NSA' ? '🟢 Strictly No Added Sulfites' : w.sulfiteStatus === 'LOW_ORGANIC' ? '🌿 Certified Organic / Low Sulfite' : '🍷 Classic Bottling'}
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-bottom:10px">
+              <button class="demo-btn" onclick="cheersFeedPost('${post.id}')">🥂 Cheers (${post.cheersCount || 1})</button>
+              <button class="demo-btn" onclick="openRateModalById('${w.id}')">⭐ Save & Rate in My Cellar</button>
+              <button class="demo-btn" onclick="openShareModalById('${w.id}')">📤 Re-Share</button>
+            </div>
+
+            ${(post.comments || []).map(c => `
+              <div style="font-size:12px; color:#E2D4DB; background:#15080E; padding:7px 10px; border-radius:8px; margin-bottom:5px">
+                <b style="color:var(--gold)">@${c.authorHandle}:</b> ${c.text}
+              </div>
+            `).join('')}
+
+            <div style="display:flex; gap:6px; margin-top:6px">
+              <input id="comment-input-${post.id}" class="search-input" style="padding:8px 10px; font-size:12px" placeholder="Write a comment to @${post.fromHandle}..." />
+              <button class="demo-btn" onclick="commentOnFeedPost('${post.id}')">Reply</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('friendsContainer').innerHTML = `
+        <div class="card-quiz-banner">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+            <div class="card-title" style="margin-bottom:0">🥂 Wine Profiles & Friends Hub</div>
+            <button class="demo-btn" onclick="openProfileModal()">➕ New / Switch Profile</button>
+          </div>
+          <div class="card-desc" style="margin-bottom:10px">
+            Logged in as <b>${state.activeProfile?.avatar || '🍷'} ${state.activeProfile?.name || state.userHandle} (@${state.userHandle})</b>. Share your profile link or send bottles directly to friends!
+          </div>
+          <div class="btn-row" style="margin-bottom:0">
+            <button class="btn-gold" onclick="navigator.clipboard?.writeText('${profileShareLink}'); alert('Copied your profile link:\\n${profileShareLink}')">
+              🔗 Copy My Profile Link (@${state.userHandle})
+            </button>
+          </div>
+        </div>
+
+        <div class="label-mini">👥 TAP A FRIEND'S PROFILE TO VIEW THEIR WINE CELLAR:</div>
+        <div class="filter-scroll" style="margin-bottom:14px">${profilesStrip}</div>
+
+        ${inspectedCellarHtml}
+
+        <div class="card-title" style="margin:16px 0 10px">🍾 Live Friends Wine Feed (${(state.socialFeed || []).length})</div>
+        ${feedHtml}
+      `;
+    }
+
+    function renderQuizTab() {
+      const p = state.palateProfile;
+      const profileHtml = p ? `
+        <div class="card-quiz-banner" style="border-color: var(--emerald)">
+          <div class="label-mini" style="color:var(--emerald); margin-top:0">✨ @${state.userHandle.toUpperCase()}’S ACTIVE WINE DNA</div>
+          <div class="card-title" style="font-size:19px">${p.archetypeTitle}</div>
+          <div class="card-desc" style="color:#E2D4DB; margin-bottom:10px">${p.archetypeDesc}</div>
+          <div class="notes-wrap">
+            ${(p.topVarietals || []).map(v => `<span class="note-tag" style="border:1px solid var(--gold)">🍇 ${v}</span>`).join('')}
+          </div>
+          <button class="btn-gold" style="width:100%; margin-top:6px" onclick="switchTab('results')">
+            🏆 See Menu Picks Matched to Your Palate →
+          </button>
+        </div>
+      ` : '';
+
+      const questionsHtml = QUIZ_QUESTIONS.map(q => `
+        <div class="card">
+          <div class="card-title">${q.title}</div>
+          <div class="card-desc">${q.subtitle}</div>
+          ${q.options.map(opt => `
+            <button
+              class="quiz-option ${state.quizAnswers[q.key] === opt.value ? 'selected' : ''}"
+              onclick="selectQuizOption('${q.key}', '${opt.value}')"
+            >
+              <div class="quiz-opt-title">${opt.label}</div>
+              <div class="quiz-opt-desc">${opt.desc}</div>
+            </button>
+          `).join('')}
+        </div>
+      `).join('');
+
+      document.getElementById('quizContainer').innerHTML = `
+        <div class="card" style="background:#240F19; border-color:#522339">
+          <div class="card-title">🧭 Sommelier Palate Discovery Quiz (@${state.userHandle})</div>
+          <div class="card-desc" style="margin-bottom:0">
+            Answer these 5 questions so VinoIQ knows what kind of wine is best for you. Saved directly to your @${state.userHandle} profile!
+          </div>
+        </div>
+        ${profileHtml}
+        ${questionsHtml}
+        <button class="btn-gold" style="width:100%; padding:16px; font-size:15px; margin-bottom:20px" onclick="submitPalateQuiz()">
+          ✨ Save My Wine Profile & Find My Best Wines
+        </button>
+      `;
+    }
+
+    function selectQuizOption(key, value) {
+      state.quizAnswers[key] = value;
+      renderQuizTab();
+    }
+
+    async function submitPalateQuiz() {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/palate-quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers: state.quizAnswers, userHandle: state.userHandle })
+        });
+        const data = await res.json();
+        state.palateProfile = data.palateProfile;
+        if (state.palateProfile?.recommendedFilters) {
+          state.filters.wineType = state.palateProfile.recommendedFilters.wineType || 'All';
+          state.filters.wineStyle = state.palateProfile.recommendedFilters.wineStyle || 'All';
+          state.filters.budget = state.palateProfile.recommendedFilters.budget || 'Any Price';
+          renderFilterPills();
+        }
+        updatePalateBanner();
+        renderQuizTab();
+        await runRestaurantLookup(state.lastAnalysis?.venueName || 'Prime + Proper', true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // === RATE & STORE WINE MODAL LOGIC ===
+    function openRateModalById(wineId) {
+      const pool = [
+        ...(state.lastAnalysis?.allAnalyzedWines || []),
+        ...state.favorites,
+        ...(state.socialFeed || []).map(p => p.wine)
+      ];
+      const wine = pool.find(w => w && w.id === wineId);
+      if (!wine) return;
+
+      const existingFav = state.favorites.find(f => f.id === wine.id);
+      state.ratingModalTargetWine = wine;
+      state.ratingModalIsCustom = false;
+      state.ratingModalStars = existingFav?.userRating || wine.userRating || 5;
+
+      document.getElementById('customWineFields').classList.add('hidden');
+      document.getElementById('rateModalTitle').textContent = `⭐ Rate: ${wine.name}`;
+      document.getElementById('rateModalSub').textContent = `${wine.varietal} • ${wine.region}`;
+      document.getElementById('rateVenueInput').value =
+        existingFav?.venueEnjoyed || state.lastAnalysis?.venueName || '';
+      document.getElementById('rateNotesInput').value = existingFav?.userNotes || '';
+      document.getElementById('rateOrderAgain').checked =
+        existingFav?.wouldOrderAgain !== undefined ? existingFav.wouldOrderAgain : true;
+
+      renderStarsInModal();
+      document.getElementById('rateModal').classList.remove('hidden');
+    }
+
+    function openCustomWineModal() {
+      state.ratingModalTargetWine = null;
+      state.ratingModalIsCustom = true;
+      state.ratingModalStars = 5;
+
+      document.getElementById('customWineFields').classList.remove('hidden');
+      document.getElementById('rateModalTitle').textContent = '➕ Store & Rate a Wine in Your Cellar';
+      document.getElementById('rateModalSub').textContent = 'Log any bottle you tried at a restaurant or at home with your own rating.';
+      document.getElementById('customWineName').value = '';
+      document.getElementById('customWineVarietal').value = '';
+      document.getElementById('customWinePrice').value = '';
+      document.getElementById('rateVenueInput').value = state.lastAnalysis?.venueName || '';
+      document.getElementById('rateNotesInput').value = '';
+      document.getElementById('rateOrderAgain').checked = true;
+
+      renderStarsInModal();
+      document.getElementById('rateModal').classList.remove('hidden');
+    }
+
+    function renderStarsInModal() {
+      const row = document.getElementById('starPickerRow');
+      row.innerHTML = [1, 2, 3, 4, 5].map(n => `
+        <button class="star-btn" onclick="setModalStars(${n})">
+          ${n <= state.ratingModalStars ? '⭐' : '☆'}
+        </button>
+      `).join('');
+      document.getElementById('starRatingLabel').textContent = STAR_DESCRIPTIONS[state.ratingModalStars];
+    }
+
+    function setModalStars(n) {
+      state.ratingModalStars = n;
+      renderStarsInModal();
+    }
+
+    function closeRateModal() {
+      document.getElementById('rateModal').classList.add('hidden');
+    }
+
+    async function submitWineRating() {
+      let wineObj = state.ratingModalTargetWine;
+      if (state.ratingModalIsCustom) {
+        const nameVal = document.getElementById('customWineName').value.trim();
+        if (!nameVal) {
+          alert('Please enter the wine name.');
+          return;
+        }
+        wineObj = {
+          id: `custom-${Date.now()}`,
+          name: nameVal,
+          producer: nameVal,
+          type: document.getElementById('customWineType').value,
+          sulfiteStatus: document.getElementById('customWineSulfite').value,
+          varietal: document.getElementById('customWineVarietal').value.trim() || 'Signature Wine',
+          menuBottlePrice: Number(document.getElementById('customWinePrice').value) || 48,
+          region: document.getElementById('rateVenueInput').value.trim() || 'Personal Wine Cellar'
+        };
+      }
+
+      const res = await fetch('/api/cellar/rate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userHandle: state.userHandle,
+          wine: wineObj,
+          userRating: state.ratingModalStars,
+          userNotes: document.getElementById('rateNotesInput').value,
+          venueEnjoyed: document.getElementById('rateVenueInput').value,
+          wouldOrderAgain: document.getElementById('rateOrderAgain').checked,
+          shareToFeed: document.getElementById('rateShareFeed').checked
+        })
+      });
+      const data = await res.json();
+      state.favorites = data.favorites || [];
+      if (data.palateProfile) state.palateProfile = data.palateProfile;
+      if (data.socialFeed) state.socialFeed = data.socialFeed;
+      document.getElementById('savedNavLabel').textContent = `Cellar (${state.favorites.length})`;
+      closeRateModal();
+
+      await loadUserData();
+      if (state.lastAnalysis) {
+        await runRestaurantLookup(state.lastAnalysis.venueName, false);
+      }
+      renderSavedTab();
+    }
+
+    async function deleteStoredWine(wineId) {
+      const res = await fetch(`/api/cellar/${encodeURIComponent(wineId)}?userHandle=${encodeURIComponent(state.userHandle)}`, { method: 'DELETE' });
+      const data = await res.json();
+      state.favorites = data.favorites || [];
+      document.getElementById('savedNavLabel').textContent = `Cellar (${state.favorites.length})`;
+      renderSavedTab();
+      if (state.lastAnalysis) {
+        await runRestaurantLookup(state.lastAnalysis.venueName, false);
+      }
+    }
+
+    function selectQuickVenue(name) {
+      document.getElementById('venueInput').value = name;
+      runRestaurantLookup(name, true);
+    }
+
+    async function runRestaurantLookup(overrideQuery, goToResults = true) {
+      const query = overrideQuery !== undefined ? overrideQuery : document.getElementById('venueInput').value;
+      setLoading(true);
+      try {
+        const res = await fetch('/api/search-restaurant', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: query || 'Prime + Proper',
+            filters: state.filters,
+            userHandle: state.userHandle
+          })
+        });
+        const data = await res.json();
+        state.lastAnalysis = data;
+        renderResultsTab();
+        renderSulfitesTab();
+        await loadUserData();
+        if (goToResults) switchTab('results');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function runSamplePhotoScan(sampleId) {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/analyze-menu-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sampleId, filters: state.filters, userHandle: state.userHandle })
+        });
+        const data = await res.json();
+        state.lastAnalysis = data;
+        renderResultsTab();
+        renderSulfitesTab();
+        await loadUserData();
+        switchTab('results');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function handlePhotoFile(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const formData = new FormData();
+      formData.append('photo', file);
+      formData.append('menuTitle', `Menu Photo: ${file.name}`);
+      formData.append('userHandle', state.userHandle);
+      formData.append('filters', JSON.stringify(state.filters));
+      setLoading(true);
+      try {
+        const res = await fetch('/api/analyze-menu-photo', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        state.lastAnalysis = data;
+        renderResultsTab();
+        renderSulfitesTab();
+        await loadUserData();
+        switchTab('results');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function setLoading(flag) {
+      document.getElementById('loadingBox').classList.toggle('hidden', !flag);
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      ['scan', 'quiz', 'results', 'sulfites', 'friends', 'saved'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+        document.getElementById(`nav-${t}`).classList.toggle('active', t === tab);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function buildWineCardHtml(wine, icon, accentColor, awardLabel, showDelete = false) {
+      if (!wine) return '';
+      const storedEntry = state.favorites.find(f => f.id === wine.id);
+      const userRating = storedEntry?.userRating || wine.userRating || null;
+      const userNotes = storedEntry?.userNotes || wine.userNotes || '';
+      const venueEnjoyed = storedEntry?.venueEnjoyed || '';
+
+      const sulfiteBadgeClass =
+        wine.sulfiteStatus === 'NSA' ? 'badge-nsa' :
+        wine.sulfiteStatus === 'LOW_ORGANIC' ? 'badge-organic' : 'badge-conv';
+      const sulfiteLabel =
+        wine.sulfiteStatus === 'NSA' ? '🟢 STRICTLY NO ADDED SULFITES (NSA)' :
+        wine.sulfiteStatus === 'LOW_ORGANIC' ? '🌿 CERTIFIED ORGANIC / LOW SULFITE' : '🍷 STANDARD SULFITES';
+
+      const fp = wine.flavorProfile || { body: 4, tannin: 3, fruit: 4, acidity: 4, sweetness: 1 };
+      const bars = [
+        ['Body', fp.body],
+        ['Tannin', fp.tannin],
+        ['Fruit', fp.fruit],
+        ['Acidity', fp.acidity],
+        ['Sweet', fp.sweetness]
+      ].map(([lbl, val]) => `
+        <div class="bar-row">
+          <div class="bar-lbl">${lbl}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(val/5)*100}%"></div></div>
+          <div class="bar-num">${val}/5</div>
+        </div>
+      `).join('');
+
+      const starsText = userRating ? '★'.repeat(userRating) + '☆'.repeat(5 - userRating) : '';
+
+      return `
+        <div class="winner-card" style="border-left-color: ${accentColor}">
+          <div class="winner-top">
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap">
+              <span class="award-badge" style="background:${accentColor}25; color:${accentColor}; border:1px solid ${accentColor}">
+                ${icon} ${awardLabel.toUpperCase()}
+              </span>
+              ${wine.personalMatchScore ? `<span class="match-pill">🎯 ${wine.personalMatchScore}% Match</span>` : ''}
+            </div>
+            <div class="action-btn-group">
+              <button class="rate-trigger-btn ${userRating ? 'rated' : ''}" onclick="openRateModalById('${wine.id}')">
+                ${userRating ? `⭐ ${userRating}/5` : '⭐ Rate'}
+              </button>
+              <button class="share-trigger-btn" onclick="openShareModalById('${wine.id}')">
+                📤 Share
+              </button>
+            </div>
+          </div>
+
+          <div class="wine-title">${wine.name}</div>
+          <div class="wine-meta">${wine.varietal} • ${wine.region} (${wine.vintage})</div>
+
+          ${
+            userRating
+              ? `<div class="user-review-box">
+                  <div style="font-weight:800; color:#FBBF24">Your Stored Rating (@${state.userHandle}): ${starsText} (${userRating}/5) ${venueEnjoyed ? `• @ ${venueEnjoyed}` : ''}</div>
+                  ${userNotes ? `<div style="margin-top:4px; font-style:italic">"${userNotes}"</div>` : ''}
+                  ${showDelete ? `<div style="margin-top:6px"><button onclick="deleteStoredWine('${wine.id}')" style="background:none;border:none;color:#F87171;font-size:11px;font-weight:700;cursor:pointer">🗑️ Remove from Cellar</button></div>` : ''}
+                </div>`
+              : ''
+          }
+
+          <div class="price-grid">
+            <div>
+              <div class="price-lbl">GLASS</div>
+              <div class="price-val">${wine.menuGlassPrice ? '$' + wine.menuGlassPrice : 'Bottle'}</div>
+            </div>
+            <div>
+              <div class="price-lbl">MENU BOTTLE</div>
+              <div class="price-val">$${wine.menuBottlePrice}</div>
+            </div>
+            <div>
+              <div class="price-lbl">EST. RETAIL</div>
+              <div class="price-val" style="color:#B09BA4">$${wine.retailPrice}</div>
+            </div>
+            <div>
+              <div class="price-lbl">MARKUP</div>
+              <div class="price-val" style="color:${wine.markupMultiple <= 1.85 ? '#34D399' : '#FBBF24'}">${wine.markupMultiple}x</div>
+            </div>
+          </div>
+
+          <div class="sulfite-row">
+            <span class="sulfite-badge ${sulfiteBadgeClass}">${sulfiteLabel}</span>
+            <span style="font-size:12px; color:#C4AEB8">${wine.sulfitePpmEstimate}</span>
+          </div>
+
+          <div class="notes-wrap">
+            ${(wine.tastingNotes || []).map(n => `<span class="note-tag">${n}</span>`).join('')}
+          </div>
+
+          <div class="somm-note">${wine.whyItWins || wine.sommelierNote}</div>
+
+          <div class="bars-box" style="margin-bottom:10px">${bars}</div>
+
+          <!-- Retail Affiliate Monetization CTA -->
+          <button
+            class="btn-gold"
+            style="width:100%; padding:10px; font-size:12.5px; background:linear-gradient(135deg,#10B981,#059669); color:#FFF"
+            onclick="buyWineAtRetail('${wine.id}')"
+          >
+            🛒 Order Bottle at Retail ($${wine.retailPrice}) — Save $${Math.max(5, (wine.menuBottlePrice || 48) - (wine.retailPrice || 24))} vs. Menu
+          </button>
+        </div>
+      `;
+    }
+
+    async function openQrInviteModal() {
+      const res = await fetch(`/api/user-data?userHandle=${encodeURIComponent(state.userHandle)}`);
+      const data = await res.json();
+      const base = data.publicUrl || window.location.origin;
+      const inviteUrl = `${base}/?profile=${encodeURIComponent(state.userHandle)}`;
+      document.getElementById('qrPublicUrlText').textContent = inviteUrl;
+      document.getElementById('qrCodeImg').src =
+        `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(inviteUrl)}`;
+      document.getElementById('qrModal').classList.remove('hidden');
+    }
+
+    async function openVipModal() {
+      const res = await fetch(`/api/user-data?userHandle=${encodeURIComponent(state.userHandle)}`);
+      const data = await res.json();
+      const stats = data.monetizationStats || {};
+      document.getElementById('statRetailClicks').textContent = stats.retailAffiliateClicks || 0;
+      document.getElementById('statCleanClicks').textContent = stats.cleanWineBoxClicks || 0;
+      document.getElementById('statEstRev').textContent = `$${Number(stats.estimatedCommissionRevenue || 29.99).toFixed(2)}`;
+      document.getElementById('vipModal').classList.remove('hidden');
+    }
+
+    async function activateVipPro() {
+      const res = await fetch('/api/monetization/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventType: 'vip_upgrade', userHandle: state.userHandle })
+      });
+      const data = await res.json();
+      if (data.monetizationStats) {
+        document.getElementById('statEstRev').textContent = `$${Number(data.monetizationStats.estimatedCommissionRevenue).toFixed(2)}`;
+      }
+      alert('👑 VIP Pro Activated for @' + state.userHandle + '! Unlimited Markup X-Ray & Sulfite Scans unlocked.');
+      document.getElementById('vipModal').classList.add('hidden');
+    }
+
+    function openFreeSignupAndInviteModal() {
+      const refParam = new URLSearchParams(window.location.search).get('ref');
+      if (refParam) {
+        document.getElementById('referralWelcomeSubtitle').innerHTML =
+          `🍷 You were invited by <b>@${refParam}</b>! VinoIQ is <b>100% FREE forever</b>—claim your personal @handle below or invite friends to earn $10 Clean Wine Credits:`;
+      }
+      document.getElementById('quickInviteStatus').textContent = '';
+      document.getElementById('freeSignupModal').classList.remove('hidden');
+    }
+
+    async function copyPersonalReferralLink() {
+      const res = await fetch(`/api/user-data?userHandle=${encodeURIComponent(state.userHandle)}`);
+      const data = await res.json();
+      const base = data.publicUrl || window.location.origin;
+      const refUrl = `${base}/?ref=${encodeURIComponent(state.userHandle)}`;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'VinoIQ™ — 100% Free AI Wine & Sulfite Scanner',
+            text: `Try VinoIQ for free! Snap any restaurant wine list or type where you're at to see the Best Wine, Best Bang for the Buck (lowest markup), and 0-Sulfite options:`,
+            url: refUrl
+          });
+          return;
+        } catch (e) {}
+      }
+      navigator.clipboard?.writeText(refUrl);
+      document.getElementById('quickInviteStatus').textContent = `✅ Copied your free referral link: ${refUrl}`;
+    }
+
+    async function quickSendFriendSmsInvite() {
+      const rawContactsText = document.getElementById('quickInvitePhonesInput').value.trim();
+      const statusEl = document.getElementById('quickInviteStatus');
+      if (!rawContactsText) {
+        statusEl.textContent = '⚠️ Enter a friend’s name & phone number first!';
+        return;
+      }
+      statusEl.textContent = '⏳ Sending free SMS invite...';
+      try {
+        const res = await fetch('/api/growth/blast-invites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            senderHandle: state.userHandle,
+            senderName: state.activeProfile?.name || state.userHandle,
+            templateId: 'friend_free',
+            rawContactsText
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          statusEl.textContent = `🎉 Sent ${data.sentCount} free SMS invite(s)! (+${data.sentCount * 10} Wine Credits pending)`;
+          document.getElementById('quickInvitePhonesInput').value = '';
+        } else {
+          statusEl.textContent = `⚠️ ${data.error || 'Could not send invite.'}`;
+        }
+      } catch (e) {
+        statusEl.textContent = '⚠️ Error sending SMS invite.';
+      }
+    }
+
+    async function submitFreeUserSignup() {
+      const name = document.getElementById('freeSignupName').value.trim();
+      const handle = document.getElementById('freeSignupHandle').value.trim();
+      const phone = document.getElementById('freeSignupPhone').value.trim();
+      const referredBy = new URLSearchParams(window.location.search).get('ref') || 'adriano';
+      if (!name && !handle) {
+        alert('Please enter your first name to claim your free VinoIQ profile!');
+        return;
+      }
+      const res = await fetch('/api/growth/signup-free', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, handle, phone, referredBy })
+      });
+      const data = await res.json();
+      if (data.profile) {
+        state.userHandle = data.profile.handle;
+        localStorage.setItem('vinoiq_handle', state.userHandle);
+        await loadUserData();
+        document.getElementById('freeSignupModal').classList.add('hidden');
+        alert(`🎉 Welcome to VinoIQ, ${data.profile.name} (@${data.profile.handle})! Your 100% Free Profile is active${data.welcomeSmsSent ? ' and we just texted your personal link to your phone!' : '!'}`);
+      }
+    }
+
+    // Auto-prompt new visitors arriving via a ?ref= link and track ?src= Facebook Group / Community clicks
+    setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      const src = params.get('src');
+      if (src) {
+        fetch('/api/growth/community-action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ communityId: src, action: 'click' })
+        }).catch(() => {});
+      }
+      if (ref && !localStorage.getItem('vinoiq_welcomed_' + ref)) {
+        localStorage.setItem('vinoiq_welcomed_' + ref, '1');
+        openFreeSignupAndInviteModal();
+      }
+    }, 900);
+
+    function buyWineAtRetail(wineId) {
+      const pool = [
+        ...(state.lastAnalysis?.allAnalyzedWines || []),
+        ...state.favorites
+      ];
+      const wine = pool.find(w => w && w.id === wineId) || { name: 'Featured Wine', retailPrice: 38, menuBottlePrice: 95, vintage: '2021' };
+      state.activeRetailWine = wine;
+      const savings = Math.max(5, (wine.menuBottlePrice || 90) - (wine.retailPrice || 38));
+      document.getElementById('retailModalWineTitle').textContent = `🛒 ${wine.name}`;
+      document.getElementById('retailModalSavingsSub').innerHTML =
+        `Menu Price: <b>$${wine.menuBottlePrice || 90}</b> vs. Est. Retail: <b style="color:#34D399">$${wine.retailPrice || 38}</b> (Save <b>$${savings}/bottle</b>!):`;
+      document.getElementById('retailPriceBadge1').textContent = `~$${wine.retailPrice || 38} →`;
+      document.getElementById('retailOrderModal').classList.remove('hidden');
+    }
+
+    async function selectRetailPartner(retailer) {
+      const wine = state.activeRetailWine || { name: 'Organic Cabernet Sauvignon', retailPrice: 42 };
+      const res = await fetch('/api/monetization/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: 'retail_click',
+          retailer,
+          wineName: `${wine.name} ${wine.vintage && wine.vintage !== 'NV' ? wine.vintage : ''}`.trim(),
+          retailPrice: wine.retailPrice,
+          userHandle: state.userHandle
+        })
+      });
+      const data = await res.json();
+      document.getElementById('retailOrderModal').classList.add('hidden');
+      window.open(data.destinationUrl || `https://www.wine.com/search/${encodeURIComponent(wine.name)}/0`, '_blank');
+    }
+
+    async function claimCleanWineBoxOffer() {
+      const res = await fetch('/api/monetization/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType: 'clean_wine_box',
+          wineName: '6-Bottle Sulfite-Free Organic Starter Box',
+          userHandle: state.userHandle
+        })
+      });
+      const data = await res.json();
+      document.getElementById('retailOrderModal')?.classList.add('hidden');
+      window.open(data.destinationUrl || 'https://www.dryfarmwines.com/', '_blank');
+    }
+
+    function renderResultsTab() {
+      const d = state.lastAnalysis;
+      if (!d) return;
+      const totalClean = (d.sulfiteGuide?.strictlyNoAddedSulfites?.length || 0) + (d.sulfiteGuide?.organicLowSulfites?.length || 0);
+      const palateBanner = state.palateProfile ? `
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid #3D1C2B; font-size:12px; color:#FBCFE8">
+          🧭 <b>Matched to @${state.userHandle}’s Palate:</b> ${state.palateProfile.archetypeTitle}
+        </div>
+      ` : `
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid #3D1C2B; font-size:12px; color:var(--gold-light); cursor:pointer" onclick="switchTab('quiz')">
+          🧭 Want personalized match scores for @${state.userHandle}? <u>Tap to take the 30-sec Palate Quiz →</u>
+        </div>
+      `;
+
+      document.getElementById('resultsContainer').innerHTML = `
+        <div class="venue-banner">
+          <div style="font-size:20px; font-weight:800; color:#FFF">${d.venueName}</div>
+          <div style="font-size:13px; color:var(--gold); margin-top:3px">${d.venueCuisine} • ${d.totalWinesAnalyzed} Wines Analyzed</div>
+          <div style="font-size:12px; color:#BFA7B2; margin-top:6px">
+            Active Filters: ${state.filters.wineType} • ${state.filters.wineStyle} • ${state.filters.budget} • Pairing: ${state.filters.foodPairing}
+          </div>
+          ${palateBanner}
+        </div>
+
+        ${buildWineCardHtml(d.winners?.bestOverall, '🏆', '#D4AF37', 'Best Overall Wine')}
+        ${buildWineCardHtml(d.winners?.bestValue, '💰', '#34D399', 'Best Bang for the Buck (Lowest Markup)')}
+        ${buildWineCardHtml(d.winners?.bestFlavor, '🍇', '#F472B6', 'Best Flavor & Personal Palate Match')}
+
+        <div class="sulfite-cta" onclick="switchTab('sulfites')">
+          <div style="font-size:15px; font-weight:800; color:#ECFDF5">
+            🌿 See No-Sulfite & Organic Options (${totalClean} Clean Bottles Found) →
+          </div>
+          <div style="font-size:12px; color:#A7F3D0; margin-top:4px">
+            Includes Strictly No Added Sulfites (NSA) first + Certified Organic / Biodynamic low-sulfite picks
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSulfitesTab() {
+      const d = state.lastAnalysis;
+      if (!d) return;
+      const nsaList = d.sulfiteGuide?.strictlyNoAddedSulfites || [];
+      const orgList = d.sulfiteGuide?.organicLowSulfites || [];
+
+      document.getElementById('sulfitesContainer').innerHTML = `
+        <div class="card" style="background:#132620; border-color:var(--emerald)">
+          <div class="card-title" style="color:#ECFDF5">🌿 No Sulfites & Clean Wine Guide</div>
+          <div class="card-desc" style="color:#D1FAE5; margin-bottom:10px">${d.sulfiteGuide?.sommelierSulfiteTip || ''}</div>
+          <button class="btn-gold" style="width:100%; background:linear-gradient(135deg,#10B981,#047857); color:#FFF" onclick="claimCleanWineBoxOffer()">
+            📦 Get 100% Sulfite-Free Organic Wines Delivered ($30 Off) →
+          </button>
+        </div>
+
+        <div class="tier-heading" style="color:#34D399">🟢 TIER 1: STRICTLY NO ADDED SULFITES (100% SULFITE-FREE ADDED)</div>
+        ${
+          nsaList.length > 0
+            ? nsaList.map(w => buildWineCardHtml(w, '🟢', '#10B981', 'Strictly No Added Sulfites (NSA)')).join('')
+            : `<div class="card"><div class="card-desc" style="margin:0">No 100% zero-added-sulfite (NSA) labels were listed on this menu. Check Tier 2 below for Certified Organic & Biodynamic low-sulfite wines (~75% fewer sulfites than conventional wines)!</div></div>`
+        }
+
+        <div class="tier-heading" style="color:#FBBF24">🟡 TIER 2: CERTIFIED ORGANIC, BIODYNAMIC & ULTRA-LOW SULFITE (~18–40 PPM)</div>
+        ${orgList.map(w => buildWineCardHtml(w, '🌿', '#F59E0B', w.certification || 'Certified Organic / Low Sulfite')).join('')}
+      `;
+    }
+
+    function renderSavedTab() {
+      const favHtml = state.favorites.length === 0
+        ? `<div class="card"><div class="card-desc" style="margin:0">You haven't rated & stored any wines on <b>@${state.userHandle}</b> yet! Tap <b>"⭐ Rate"</b> on any wine recommendation or tap <b>"➕ Log & Rate Any Wine Bottle"</b> above.</div></div>`
+        : state.favorites.map(w => buildWineCardHtml(w, '⭐', '#D4AF37', `Rated ${w.userRating || 5}/5 Stars`, true)).join('');
+
+      const histHtml = (state.scanHistory || []).map(h => `
+        <div class="card" style="cursor:pointer; padding:13px" onclick="selectQuickVenue('${(h.venueName || '').replace(/'/g, "\\'")}')">
+          <div style="font-weight:800; color:#FFF">${h.venueName}</div>
+          <div style="font-size:12px; color:var(--gold); margin-top:2px">${h.mode} • ${h.venueCuisine}</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px">🏆 ${h.bestOverallName} | 💰 ${h.bestValueName}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('savedContainer').innerHTML = `
+        <div class="card-quiz-banner">
+          <div class="card-title">🍷 ${state.activeProfile?.name || state.userHandle}’s Wine Cellar (@${state.userHandle})</div>
+          <div class="card-desc" style="margin-bottom:12px">
+            Store every wine you try with your own 1–5 star rating and share your favorites with friends!
+          </div>
+          <div class="btn-row" style="margin-bottom:0">
+            <button class="btn-gold" onclick="openCustomWineModal()">➕ Log & Rate Wine</button>
+            <button class="btn-outline" onclick="switchTab('friends')">🥂 Share with Friends</button>
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-bottom:10px">⭐ Stored & Rated Wines (${state.favorites.length})</div>
+        ${favHtml}
+
+        <div class="card-title" style="margin:20px 0 10px">🕒 Recent Menu Scans & Restaurant Lookups</div>
+        ${histHtml}
+      `;
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
